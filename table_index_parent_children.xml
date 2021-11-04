@@ -1,0 +1,52 @@
+<table>
+    <name>parent_child_docs_rel</name>
+    <folder>table{table_id}</folder>
+    <description>
+	    Tabellen indeholder relationer mellem parent- og child-dokumenter. 
+	    Dette gælder både for containers, hvor parent-doumentet selv skal gemmes (emails m.m.)
+	    og for archive-filer, hvor parent-dokumentet skal slettes (zip-filer m.m.).
+    </description>
+    <columns>
+        <column>
+            <name>parent_id</name>
+            <columnID>c1</columnID>
+            <type>INTEGER</type>
+            <typeOriginal>int</typeOriginal>
+            <nullable>false</nullable>
+            <description>Parent-dokumentets id fra den centrale dokumenttabel i databasen.</description>
+        </column>
+        <column>
+            <name>child_id</name>
+            <columnID>c2</columnID>
+            <type>INTEGER</type>
+            <typeOriginal>int</typeOriginal>
+            <nullable>false</nullable>
+            <description>Child-dokumentets id, som kun findes i denne tabel.</description>
+        </column>
+        <column>
+            <name>child_doccollection</name>
+            <columnID>c3</columnID>
+            <type>CHARACTER VARYING(255)</type>
+            <typeOriginal>varchar</typeOriginal>
+            <nullable>false</nullable>
+            <description>Navnet på den docCollection, hvori child-dokumentet findes.</description>
+        </column>
+    </columns>
+    <primaryKey>
+        <name>pk_parent_child_docs_rel</name>
+        <column>parent_id</column>
+        <column>child_id</column>
+    </primaryKey>
+    <foreignKeys>
+        <foreignKey>
+            <name>fk_parent_child_docs_rel</name>
+            <referencedTable>{original_doc_table_name}</referencedTable>
+            <reference>
+                <column>parent_id</column>
+                <referenced>{original_doc_table_parent_id_column_name}</referenced>
+            </reference>
+        </foreignKey>
+    </foreignKeys>
+    <rows>{?}</rows>
+</table>
+    

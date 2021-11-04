@@ -1,0 +1,950 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<siardDiark xsi:schemaLocation="http://www.sa.dk/xmlns/diark/1.0 ../Schemas/standard/tableIndex.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sa.dk/xmlns/diark/1.0">
+	<version>1.0</version>
+	<dbName>BA_Fællesmøder</dbName>
+	<databaseProduct>Lotus Domino Server</databaseProduct>
+	<tables>
+		<table>
+			<name>moedeforum</name>
+			<folder>table1</folder>
+			<description>Tabellen indeholder informationsdokumenter</description>
+			<columns>
+				<column>
+					<name>moedeforum_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tabellens primærnøgle</description>
+				</column>
+				<column>
+					<name>CreatedBy</name>
+					<columnID>c2</columnID>
+					<type>NATIONAL CHARACTER VARYING(29)</type>
+					<typeOriginal>nvarchar(29)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Personen der har oprettet dokumentet</description>
+				</column>
+				<column>
+					<name>CreatedDate</name>
+					<columnID>c3</columnID>
+					<type>TIMESTAMP</type>
+					<typeOriginal>datetime</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tidspunkt for oprettelse</description>
+				</column>
+				<column>
+					<name>DocumentUniqueID</name>
+					<columnID>c4</columnID>
+					<type>NATIONAL CHARACTER VARYING(32)</type>
+					<typeOriginal>nvarchar(32)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Unik dokument ID</description>
+				</column>
+				<column>
+					<name>MøArt</name>
+					<columnID>c5</columnID>
+					<type>NATIONAL CHARACTER VARYING(96)</type>
+					<typeOriginal>nvarchar(96)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødetype</description>
+				</column>
+				<column>
+					<name>Overskrift</name>
+					<columnID>c6</columnID>
+					<type>NATIONAL CHARACTER VARYING(275)</type>
+					<typeOriginal>nvarchar(275)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Møde overskrift</description>
+				</column>
+				<column>
+					<name>Publicering</name>
+					<columnID>c7</columnID>
+					<type>NATIONAL CHARACTER VARYING(14)</type>
+					<typeOriginal>nvarchar(14)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Er mødet publiceret til intranet</description>
+				</column>
+				<column>
+					<name>Body</name>
+					<columnID>c8</columnID>
+					<type>NATIONAL CHARACTER VARYING(11894)</type>
+					<typeOriginal>nvarchar(11894)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Evt. beskrivelse og attachments</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_moedeforum</name>
+				<column>moedeforum_id</column>
+			</primaryKey>
+			<rows>167</rows>
+		</table>
+		<table>
+			<name>dagsorden</name>
+			<folder>table2</folder>
+			<description>Tabellen indeholder invitationer</description>
+			<columns>
+				<column>
+					<name>dagsorden_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tabellens primærnøgle</description>
+				</column>
+				<column>
+					<name>CreatedBy</name>
+					<columnID>c2</columnID>
+					<type>NATIONAL CHARACTER VARYING(31)</type>
+					<typeOriginal>nvarchar(31)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Personen der har oprettet dokumentet</description>
+				</column>
+				<column>
+					<name>DocumentUniqueID</name>
+					<columnID>c3</columnID>
+					<type>NATIONAL CHARACTER VARYING(32)</type>
+					<typeOriginal>nvarchar(32)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Unik dokument id</description>
+				</column>
+				<column>
+					<name>Status</name>
+					<columnID>c4</columnID>
+					<type>NATIONAL CHARACTER VARYING(18)</type>
+					<typeOriginal>nvarchar(18)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Status på mødet</description>
+				</column>
+				<column>
+					<name>dspReaders</name>
+					<columnID>c5</columnID>
+					<type>NATIONAL CHARACTER VARYING(647)</type>
+					<typeOriginal>nvarchar(647)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Læseadgang</description>
+				</column>
+				<column>
+					<name>dspEditors</name>
+					<columnID>c6</columnID>
+					<type>NATIONAL CHARACTER VARYING(599)</type>
+					<typeOriginal>nvarchar(599)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Hvem kan redigere dokumentet</description>
+				</column>
+				<column>
+					<name>Fortroligt</name>
+					<columnID>c7</columnID>
+					<type>NATIONAL CHARACTER VARYING(14)</type>
+					<typeOriginal>nvarchar(14)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Fortroligt</description>
+				</column>
+				<column>
+					<name>Organisation</name>
+					<columnID>c8</columnID>
+					<type>NATIONAL CHARACTER VARYING(10)</type>
+					<typeOriginal>nvarchar(10)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Organisation</description>
+				</column>
+				<column>
+					<name>IndMøIndk</name>
+					<columnID>c9</columnID>
+					<type>NATIONAL CHARACTER VARYING(100)</type>
+					<typeOriginal>nvarchar(100)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødeindkalder</description>
+				</column>
+				<column>
+					<name>CreatedDate</name>
+					<columnID>c10</columnID>
+					<type>DATE</type>
+					<typeOriginal>date</typeOriginal>
+					<nullable>true</nullable>
+					<description>Oprettet dato</description>
+				</column>
+				<column>
+					<name>MøArt</name>
+					<columnID>c11</columnID>
+					<type>NATIONAL CHARACTER VARYING(96)</type>
+					<typeOriginal>nvarchar(96)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødetype</description>
+				</column>
+				<column>
+					<name>IndMøDato</name>
+					<columnID>c12</columnID>
+					<type>DATE</type>
+					<typeOriginal>date</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødedato</description>
+				</column>
+				<column>
+					<name>IndMøKl</name>
+					<columnID>c13</columnID>
+					<type>TIME</type>
+					<typeOriginal>nvarchar(20)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Møde sluttidspunkt</description>
+				</column>
+				<column>
+					<name>RefKopiTil</name>
+					<columnID>c14</columnID>
+					<type>NATIONAL CHARACTER VARYING(719)</type>
+					<typeOriginal>nvarchar(719)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Kopi til </description>
+				</column>
+				<column>
+					<name>Bemaerkninger</name>
+					<columnID>c15</columnID>
+					<type>NATIONAL CHARACTER VARYING(807)</type>
+					<typeOriginal>nvarchar(807)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Bemærkninger til mødet</description>
+				</column>
+				<column>
+					<name>Body</name>
+					<columnID>c16</columnID>
+					<type>NATIONAL CHARACTER VARYING(20177)</type>
+					<typeOriginal>nvarchar(20177)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødets dagsorden</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_dagsorden</name>
+				<column>dagsorden_id</column>
+			</primaryKey>
+			<rows>3097</rows>
+		</table>
+		<table>
+			<name>referat</name>
+			<folder>table3</folder>
+			<description>Tabellen indeholder Referater med tilhørende bilag. </description>
+			<columns>
+				<column>
+					<name>referat_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tabellens primærnøgle</description>
+				</column>
+				<column>
+					<name>CreatedBy</name>
+					<columnID>c2</columnID>
+					<type>NATIONAL CHARACTER VARYING(31)</type>
+					<typeOriginal>nvarchar(31)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Personen der oprettede dokumentet</description>
+				</column>
+				<column>
+					<name>CreatedDate</name>
+					<columnID>c3</columnID>
+					<type>TIMESTAMP</type>
+					<typeOriginal>datetime</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tidspunkt for oprettelse</description>
+				</column>
+				<column>
+					<name>DocumentUniqueID</name>
+					<columnID>c4</columnID>
+					<type>NATIONAL CHARACTER VARYING(32)</type>
+					<typeOriginal>nvarchar(32)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Dokumentets entydige ID</description>
+				</column>
+				<column>
+					<name>Status</name>
+					<columnID>c5</columnID>
+					<type>NATIONAL CHARACTER VARYING(18)</type>
+					<typeOriginal>nvarchar(18)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Status på mødet</description>
+				</column>
+				<column>
+					<name>ReaderMeetingProfile</name>
+					<columnID>c6</columnID>
+					<type>NATIONAL CHARACTER VARYING(747)</type>
+					<typeOriginal>nvarchar(747)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Læseadgang på mødet</description>
+				</column>
+				<column>
+					<name>AuthorMeetingProfile</name>
+					<columnID>c7</columnID>
+					<type>NATIONAL CHARACTER VARYING(208)</type>
+					<typeOriginal>nvarchar(208)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Hvem kan redigere invitationen</description>
+				</column>
+				<column>
+					<name>Fortroligt</name>
+					<columnID>c8</columnID>
+					<type>NATIONAL CHARACTER VARYING(14)</type>
+					<typeOriginal>nvarchar(14)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Er indholdet fortroligt</description>
+				</column>
+				<column>
+					<name>Organisation</name>
+					<columnID>c9</columnID>
+					<type>NATIONAL CHARACTER VARYING(31)</type>
+					<typeOriginal>nvarchar(31)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Organisationen</description>
+				</column>
+				<column>
+					<name>RefUdfAf</name>
+					<columnID>c10</columnID>
+					<type>NATIONAL CHARACTER VARYING(51)</type>
+					<typeOriginal>nvarchar(51)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Referat tager</description>
+				</column>
+				<column>
+					<name>MøArt</name>
+					<columnID>c11</columnID>
+					<type>NATIONAL CHARACTER VARYING(96)</type>
+					<typeOriginal>nvarchar(96)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Mødetype</description>
+				</column>
+				<column>
+					<name>DateX</name>
+					<columnID>c12</columnID>
+					<type>DATE</type>
+					<typeOriginal>date</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødedato</description>
+				</column>
+				<column>
+					<name>RefMøTid</name>
+					<columnID>c13</columnID>
+					<type>TIME</type>
+					<typeOriginal>time</typeOriginal>
+					<nullable>true</nullable>
+					<description>Møde starttidspunkt</description>
+				</column>
+				<column>
+					<name>RefMøVar</name>
+					<columnID>c14</columnID>
+					<type>TIME</type>
+					<typeOriginal>time</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødets sluttidspunkt</description>
+				</column>
+				<column>
+					<name>MøSted</name>
+					<columnID>c15</columnID>
+					<type>NATIONAL CHARACTER VARYING(78)</type>
+					<typeOriginal>nvarchar(78)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødested</description>
+				</column>
+				<column>
+					<name>RefDel</name>
+					<columnID>c16</columnID>
+					<type>NATIONAL CHARACTER VARYING(1046)</type>
+					<typeOriginal>nvarchar(1046)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødedeltagere</description>
+				</column>
+				<column>
+					<name>RefFra</name>
+					<columnID>c17</columnID>
+					<type>NATIONAL CHARACTER VARYING(160)</type>
+					<typeOriginal>nvarchar(160)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Fraværende til mødet</description>
+				</column>
+				<column>
+					<name>RefVisitor</name>
+					<columnID>c18</columnID>
+					<type>NATIONAL CHARACTER VARYING(175)</type>
+					<typeOriginal>nvarchar(175)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Gæster til mødet</description>
+				</column>
+				<column>
+					<name>RefKopiTil</name>
+					<columnID>c19</columnID>
+					<type>NATIONAL CHARACTER VARYING(719)</type>
+					<typeOriginal>nvarchar(719)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Kopi af referat sendes til</description>
+				</column>
+				<column>
+					<name>Publicering</name>
+					<columnID>c20</columnID>
+					<type>NATIONAL CHARACTER VARYING(14)</type>
+					<typeOriginal>nvarchar(14)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Publiceringsstatus</description>
+				</column>
+				<column>
+					<name>Body</name>
+					<columnID>c21</columnID>
+					<type>NATIONAL CHARACTER VARYING(25024)</type>
+					<typeOriginal>nvarchar(25024)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Referat fra mødet</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_referat</name>
+				<column>referat_id</column>
+			</primaryKey>
+			<rows>1570</rows>
+		</table>
+		<table>
+			<name>bilag</name>
+			<folder>table4</folder>
+			<description>Tabellen indeholder bilag</description>
+			<columns>
+				<column>
+					<name>bilag_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tabellens primærnøgle</description>
+				</column>
+				<column>
+					<name>CreatedBy</name>
+					<columnID>c2</columnID>
+					<type>NATIONAL CHARACTER VARYING(31)</type>
+					<typeOriginal>nvarchar(31)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Personen der oprettede dokumentet</description>
+				</column>
+				<column>
+					<name>CreatedDate</name>
+					<columnID>c3</columnID>
+					<type>TIMESTAMP</type>
+					<typeOriginal>datetime</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tidspunkt for oprettelse</description>
+				</column>
+				<column>
+					<name>DocumentUniqueID</name>
+					<columnID>c4</columnID>
+					<type>NATIONAL CHARACTER VARYING(32)</type>
+					<typeOriginal>nvarchar(32)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Entydig dokumentid</description>
+				</column>
+				<column>
+					<name>Status</name>
+					<columnID>c5</columnID>
+					<type>NATIONAL CHARACTER VARYING(6)</type>
+					<typeOriginal>nvarchar(6)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Status på invitationen</description>
+				</column>
+				<column>
+					<name>ReadersIndMøTil</name>
+					<columnID>c6</columnID>
+					<type>NATIONAL CHARACTER VARYING(590)</type>
+					<typeOriginal>nvarchar(590)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Læseadgang</description>
+				</column>
+				<column>
+					<name>IsMemberForaResp</name>
+					<columnID>c7</columnID>
+					<type>NATIONAL CHARACTER VARYING(318)</type>
+					<typeOriginal>nvarchar(318)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Hvem kan redigere</description>
+				</column>
+				<column>
+					<name>Fortroligt</name>
+					<columnID>c8</columnID>
+					<type>NATIONAL CHARACTER VARYING(14)</type>
+					<typeOriginal>nvarchar(14)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Er indholdet fortroligt</description>
+				</column>
+				<column>
+					<name>Organisation</name>
+					<columnID>c9</columnID>
+					<type>NATIONAL CHARACTER VARYING(31)</type>
+					<typeOriginal>nvarchar(31)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Organisationen</description>
+				</column>
+				<column>
+					<name>MøArt</name>
+					<columnID>c10</columnID>
+					<type>NATIONAL CHARACTER VARYING(100)</type>
+					<typeOriginal>nvarchar(100)</typeOriginal>
+					<nullable>false</nullable>
+					<description>Mødetype</description>
+				</column>
+				<column>
+					<name>MøSted</name>
+					<columnID>c11</columnID>
+					<type>NATIONAL CHARACTER VARYING(84)</type>
+					<typeOriginal>nvarchar(84)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødested</description>
+				</column>
+				<column>
+					<name>IndMøTil</name>
+					<columnID>c12</columnID>
+					<type>NATIONAL CHARACTER VARYING(788)</type>
+					<typeOriginal>nvarchar(788)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Mødedeltagere</description>
+				</column>
+				<column>
+					<name>Dagsordenpunkt</name>
+					<columnID>c13</columnID>
+					<type>NATIONAL CHARACTER VARYING(14)</type>
+					<typeOriginal>nvarchar(14)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Dagsorden del nr</description>
+				</column>
+				<column>
+					<name>Overskrift</name>
+					<columnID>c14</columnID>
+					<type>NATIONAL CHARACTER VARYING(222)</type>
+					<typeOriginal>nvarchar(222)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Overskrift til dagsordenspunktet</description>
+				</column>
+				<column>
+					<name>Body</name>
+					<columnID>c15</columnID>
+					<type>NATIONAL CHARACTER VARYING(8986)</type>
+					<typeOriginal>nvarchar(8986)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Tekst</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_bilag</name>
+				<column>bilag_id</column>
+			</primaryKey>
+			<rows>5098</rows>
+		</table>
+		<table>
+			<name>fil</name>
+			<folder>table5</folder>
+			<description>Relation mellem notes-dokument og attachment</description>
+			<columns>
+				<column>
+					<name>fil_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Tabellens primærnøgle</description>
+					<functionalDescription>Dokumentidentifikation</functionalDescription>
+				</column>
+				<column>
+					<name>notes_template_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>IMP_NR fra fil reference mellem fx. dagsorden og fil</description>
+				</column>
+				<column>
+					<name>notes_template_name</name>
+					<columnID>c3</columnID>
+					<type>NATIONAL CHARACTER VARYING(50)</type>
+					<typeOriginal>nvarchar(50)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Tabel der indeholder attachment</description>
+				</column>
+				<column>
+					<name>filename</name>
+					<columnID>c4</columnID>
+					<type>NATIONAL CHARACTER VARYING(100)</type>
+					<typeOriginal>nvarchar(100)</typeOriginal>
+					<nullable>true</nullable>
+					<description>Navn på attachment</description>
+					<functionalDescription>Dokumenttitel</functionalDescription>
+				</column>
+				<column>
+					<name>doc_collection_id</name>
+					<columnID>c5</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Angivelse af nummer for DocCollection</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_fil</name>
+				<column>fil_id</column>
+			</primaryKey>
+			<rows>7027</rows>
+		</table>
+		<table>
+			<name>dagsorden_bilag</name>
+			<folder>table6</folder>
+			<description>Relation mellem invitation og bilagsdokument</description>
+			<columns>
+				<column>
+					<name>bilag_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>FN bilag_ID</description>
+				</column>
+				<column>
+					<name>dagsorden_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>FN til dagsorden</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_dagsorden_bilag</name>
+				<column>bilag_id</column>
+				<column>dagsorden_id</column>
+			</primaryKey>
+			<foreignKeys>
+				<foreignKey>
+					<name>FK_db_dagsorden</name>
+					<referencedTable>dagsorden</referencedTable>
+					<reference>
+						<column>dagsorden_id</column>
+						<referenced>dagsorden_id</referenced>
+					</reference>
+				</foreignKey>
+				<foreignKey>
+					<name>FK_db_bilag</name>
+					<referencedTable>bilag</referencedTable>
+					<reference>
+						<column>bilag_id</column>
+						<referenced>bilag_id</referenced>
+					</reference>
+				</foreignKey>
+			</foreignKeys>
+			<rows>5033</rows>
+		</table>
+		<table>
+			<name>referat_bilag</name>
+			<folder>table7</folder>
+			<description>Relation mellem referat og bilagsdokument</description>
+			<columns>
+				<column>
+					<name>bilag_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>FN bilag_ID</description>
+				</column>
+				<column>
+					<name>referat_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>FN til referat</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_referat_bilag</name>
+				<column>bilag_id</column>
+				<column>referat_id</column>
+			</primaryKey>
+			<foreignKeys>
+				<foreignKey>
+					<name>FK_rb_referat</name>
+					<referencedTable>referat</referencedTable>
+					<reference>
+						<column>referat_id</column>
+						<referenced>referat_id</referenced>
+					</reference>
+				</foreignKey>
+				<foreignKey>
+					<name>FK_rb_bilag</name>
+					<referencedTable>bilag</referencedTable>
+					<reference>
+						<column>bilag_id</column>
+						<referenced>bilag_id</referenced>
+					</reference>
+				</foreignKey>
+			</foreignKeys>
+			<rows>54</rows>
+		</table>
+		<table>
+			<name>moedeforum_fil</name>
+			<folder>table8</folder>
+			<description>Relation mellem informationsdokumenter og filer</description>
+			<columns>
+				<column>
+					<name>moedeforum_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på tilhørende moedeforum</description>
+				</column>
+				<column>
+					<name>fil_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på tilhørende fil</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_moedeforum_fil</name>
+				<column>moedeforum_id</column>
+				<column>fil_id</column>
+			</primaryKey>
+			<foreignKeys>
+				<foreignKey>
+					<name>FK_ff_moedeforum</name>
+					<referencedTable>moedeforum</referencedTable>
+					<reference>
+						<column>moedeforum_id</column>
+						<referenced>moedeforum_id</referenced>
+					</reference>
+				</foreignKey>
+				<foreignKey>
+					<name>FK_ff_fil</name>
+					<referencedTable>fil</referencedTable>
+					<reference>
+						<column>fil_id</column>
+						<referenced>fil_id</referenced>
+					</reference>
+				</foreignKey>
+			</foreignKeys>
+			<rows>13</rows>
+		</table>
+		<table>
+			<name>dagsorden_fil</name>
+			<folder>table9</folder>
+			<description>Relation mellem dagsorden og fil</description>
+			<columns>
+				<column>
+					<name>dagsorden_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>Id på dagsorden</description>
+				</column>
+				<column>
+					<name>fil_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på Fil tabel</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_dagsorden_fil</name>
+				<column>dagsorden_id</column>
+				<column>fil_id</column>
+			</primaryKey>
+			<foreignKeys>
+				<foreignKey>
+					<name>FK_df_dagsorden</name>
+					<referencedTable>dagsorden</referencedTable>
+					<reference>
+						<column>dagsorden_id</column>
+						<referenced>dagsorden_id</referenced>
+					</reference>
+				</foreignKey>
+				<foreignKey>
+					<name>FK_df_fil</name>
+					<referencedTable>fil</referencedTable>
+					<reference>
+						<column>fil_id</column>
+						<referenced>fil_id</referenced>
+					</reference>
+				</foreignKey>
+			</foreignKeys>
+			<rows>131</rows>
+		</table>
+		<table>
+			<name>referat_fil</name>
+			<folder>table10</folder>
+			<description>Relation mellem referater og filer</description>
+			<columns>
+				<column>
+					<name>referat_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på referat</description>
+				</column>
+				<column>
+					<name>fil_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på fil</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_referat_fil</name>
+				<column>referat_id</column>
+				<column>fil_id</column>
+			</primaryKey>
+			<foreignKeys>
+				<foreignKey>
+					<name>FK_rf_referat</name>
+					<referencedTable>referat</referencedTable>
+					<reference>
+						<column>referat_id</column>
+						<referenced>referat_id</referenced>
+					</reference>
+				</foreignKey>
+				<foreignKey>
+					<name>FK_rf_fil</name>
+					<referencedTable>fil</referencedTable>
+					<reference>
+						<column>fil_id</column>
+						<referenced>fil_id</referenced>
+					</reference>
+				</foreignKey>
+			</foreignKeys>
+			<rows>57</rows>
+		</table>
+		<table>
+			<name>bilag_fil</name>
+			<folder>table11</folder>
+			<description>Relation mellem bilag og fil</description>
+			<columns>
+				<column>
+					<name>bilag_id</name>
+					<columnID>c1</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på bilag</description>
+				</column>
+				<column>
+					<name>fil_id</name>
+					<columnID>c2</columnID>
+					<type>INTEGER</type>
+					<typeOriginal>bigint</typeOriginal>
+					<nullable>false</nullable>
+					<description>ID på fil</description>
+				</column>
+			</columns>
+			<primaryKey>
+				<name>PK_bilag_fil</name>
+				<column>bilag_id</column>
+				<column>fil_id</column>
+			</primaryKey>
+			<foreignKeys>
+				<foreignKey>
+					<name>FK_bf_bilag</name>
+					<referencedTable>bilag</referencedTable>
+					<reference>
+						<column>bilag_id</column>
+						<referenced>bilag_id</referenced>
+					</reference>
+				</foreignKey>
+				<foreignKey>
+					<name>FK_bf_fil</name>
+					<referencedTable>fil</referencedTable>
+					<reference>
+						<column>fil_id</column>
+						<referenced>fil_id</referenced>
+					</reference>
+				</foreignKey>
+			</foreignKeys>
+			<rows>6826</rows>
+		</table>
+	</tables>
+	<views>
+		<view>
+			<name>AV_møde</name>
+			<queryOriginal>	
+			SELECT dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, dagsorden.dagsorden_id, dagsorden.Body AS dagsordentekst, referat.referat_id, referat.Body AS referattekst
+			FROM dagsorden 
+			LEFT JOIN referat ON dagsorden.MøArt = referat.MøArt 
+			AND dagsorden.IndMøDato = referat.DateX 
+			WHERE dagsorden.IndMøDato = '2004-03-31'
+			AND dagsorden.MøArt = 'Formøder hos borgmesteren';
+			</queryOriginal>
+			<description>SQL-forespørgsel, der henter mødeforum, mødedato, dagsorden_id, dagsordenteksten og eventuelt referat_id og referatteksten for et givet mødeforum på en given dato. For at hente en mødeoversigt kan man slette enten mødedato eller mødeforum fra WHERE-betingelserne, og ved at bruge LIKE i stedet for = i WHERE-betingelserne kan man søge på årstal fremfor en specifik dato. Forespørgslen virker ikke, hvis der ikke er en dagsorden.</description>
+		</view>
+		<view>
+			<name>AV_dagsordenfiler</name>
+			<queryOriginal>	
+			SELECT dagsorden.dagsorden_id, dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM dagsorden
+			INNER JOIN dagsorden_fil
+			ON dagsorden.dagsorden_id = dagsorden_fil.dagsorden_id
+			INNER JOIN fil
+			ON dagsorden_fil.fil_id = fil.fil_id
+			WHERE dagsorden.MøArt = 'Chefmøde'
+			AND dagsorden.IndMøDato = '2005-01-11';
+			</queryOriginal>
+			<description>SQL-forespørgsel, der henter dagsorden_id, mødeforum, mødedato og eventuelle tilknyttede filers navn og placering for en given dagsorden.</description>
+		</view>
+		<view>
+			<name>AV_dagsordenbilag</name>
+			<queryOriginal>	
+			SELECT dagsorden.dagsorden_id, dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, bilag.bilag_id, bilag.Dagsordenpunkt, bilag.Overskrift, bilag.Body AS bilagstekst, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM dagsorden
+			INNER JOIN dagsorden_bilag
+			ON dagsorden.dagsorden_id = dagsorden_bilag.dagsorden_id
+			INNER JOIN bilag
+			ON dagsorden_bilag.bilag_id = bilag.bilag_id
+			LEFT JOIN bilag_fil
+			ON bilag.bilag_id = bilag_fil.bilag_id
+			LEFT JOIN fil
+			ON bilag_fil.fil_id = fil.fil_id
+			WHERE dagsorden.MøArt = 'Chefmøde'
+			AND dagsorden.IndMøDato = '2003-11-11';
+			</queryOriginal>
+			<description>SQL-forespørgsel, der henter dagsorden_id, mødeforum, mødedato, dagsordenbilag og eventuelle tilknyttede bilagsfilers navn og placering.</description>
+		</view>
+		<view>
+			<name>AV_referatfiler</name>
+			<queryOriginal>	
+			SELECT referat.referat_id, referat.MøArt AS mødeforum, referat.DateX AS mødedato, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM referat
+			INNER JOIN referat_fil
+			ON referat.referat_id = referat_fil.referat_id
+			INNER JOIN fil
+			ON referat_fil.fil_id = fil.fil_id
+			WHERE referat.MøArt = 'Afdelingsmøde'
+			AND referat.DateX = '2004-05-19';
+			</queryOriginal>
+			<description>SQL-forespørgsel, der henter referat_id, mødeforum, mødedato og eventuelle tilknyttede filers navn og placering for et givent referat.</description>
+		</view>
+		<view>
+			<name>AV_referatbilag</name>
+			<queryOriginal>	
+			SELECT referat.referat_id, referat.MøArt AS mødeforum, referat.DateX AS mødedato, bilag.bilag_id, bilag.Dagsordenpunkt, bilag.Overskrift, bilag.Body AS bilagstekst, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM referat
+			INNER JOIN referat_bilag
+			ON referat.referat_id = referat_bilag.referat_id
+			INNER JOIN bilag
+			ON referat_bilag.referat_id = bilag.bilag_id
+			LEFT JOIN bilag_fil
+			ON bilag.bilag_id = bilag_fil.bilag_id
+			LEFT JOIN fil
+			ON bilag_fil.fil_id = fil.fil_id
+			WHERE referat.MøArt = 'PK-gruppen'
+			AND referat.DateX = '2008-08-14';
+			</queryOriginal>
+			<description>SQL-forespørgsel, der henter referat_id, mødeforum, mødedato, referatbilag og eventuelle tilknyttede bilagsfilers navn og placering.</description>
+		</view>
+	</views>
+</siardDiark>

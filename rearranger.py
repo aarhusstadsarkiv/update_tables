@@ -166,8 +166,11 @@ if __name__ == "__main__":
                     extracted_folders.append(item)
 
         for folder in extracted_folders:
-            doc_elements, count = rearrange_files(folder, new_docCollection, count)
-            # Convert the doc_elements to xml strings and append them to docIndex.
+            doc_elements, count = rearrange_files(
+                folder, new_docCollection, count
+            )
+            # Convert the doc_elements to xml strings
+            # and append them to docIndex.
             doc_element_xml_strings = doc_elements_to_xml(doc_elements)
             append_to_docIndex(doc_index_path, doc_element_xml_strings)
-        print(f"Finished processing {docCollection.name}.")      
+        print(f"Finished processing {docCollection.name}.")

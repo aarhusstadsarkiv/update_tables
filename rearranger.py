@@ -147,31 +147,27 @@ def append_to_docIndex(docIndex: Path, xml_strings: List[str]) -> None:
 
 
 if __name__ == "__main__":
-
+    # Root is the directory that contains the docCollections.
     root = Path(argv[1])
-    new_docCollection = root.parent / ("docCollection" + argv[2])
+    new_docCollection = root / ("docCollection" + argv[2])
+    doc_index_path = root.parent / "Indices" / "docIndex.xml"
+
     try:
         count = int(argv[3])
     except ValueError:
         print(f"Could not parse the string: {argv[3]} as an integer.")
-    extracted_folders = []
-    for doc_folder in root.iterdir():
-        for item in doc_folder.iterdir():
-            if item.suffix == ".extracted":
-                extracted_folders.append(item)
 
-    for folder in extracted_folders():
-        rearrange_files(folder, new_docCollection, count)
+    for docCollection in root.iterdir():
+        print(f"Start processing of {docCollection.name}")
+        extracted_folders = []
+        for doc_folder in docCollection.iterdir():
+            for item in doc_folder.iterdir():
+                if item.suffix == ".extracted":
+                    extracted_folders.append(item)
 
-    """new_doc_collection = argv[2]
-
-    doc_elements, count = rearrange_files(
-        Path(extracted_folder),
-        Path(new_doc_collection),
-        2,
-    )
-
-    xml_strings = doc_elements_to_xml(doc_elements)
-
-    # append_to_docIndex(Path("/home/az58999/docIndex.xml"), xml_strings)
-"""
+        for folder in extracted_folders:
+            doc_elements, count = rearrange_files(folder, new_docCollection, count)
+            # Convert the doc_elements to xml strings and append them to docIndex.
+            doc_element_xml_strings = doc_elements_to_xml(doc_elements)
+            append_to_docIndex(doc_index_path, doc_element_xml_strings)
+        print(f"Finished processing {docCollection.name}.")      

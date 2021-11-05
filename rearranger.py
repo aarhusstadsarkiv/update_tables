@@ -147,8 +147,23 @@ def append_to_docIndex(docIndex: Path, xml_strings: List[str]) -> None:
 
 
 if __name__ == "__main__":
-    extracted_folder = argv[1]
-    new_doc_collection = argv[2]
+
+    root = Path(argv[1])
+    new_docCollection = root.parent / ("docCollection" + argv[2])
+    try:
+        count = int(argv[3])
+    except ValueError:
+        print(f"Could not parse the string: {argv[3]} as an integer.")
+    extracted_folders = []
+    for doc_folder in root.iterdir():
+        for item in doc_folder.iterdir():
+            if item.suffix == ".extracted":
+                extracted_folders.append(item)
+
+    for folder in extracted_folders():
+        rearrange_files(folder, new_docCollection, count)
+
+    """new_doc_collection = argv[2]
 
     doc_elements, count = rearrange_files(
         Path(extracted_folder),
@@ -159,3 +174,4 @@ if __name__ == "__main__":
     xml_strings = doc_elements_to_xml(doc_elements)
 
     # append_to_docIndex(Path("/home/az58999/docIndex.xml"), xml_strings)
+"""

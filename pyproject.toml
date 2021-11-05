@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "update_tables"
+version = "0.1.0"
+description = "Update the database xml tables when rearranging extracted archive files."
+authors = ["Aryan <arml@aarhus.dk>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+black = "^21.10b0"
+flake8 = "^4.0.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
+exclude = ".venv"
+
+[tool.flake8]
+exclude = ".venv"

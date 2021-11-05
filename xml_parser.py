@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 class XMLParser():
     def __init__(self, xml_file_path, namespace=None) -> None:
@@ -12,7 +13,16 @@ class XMLParser():
     def add_element_to_root(self, element_to_add: ET.Element) -> None:
         self.root_node.append(element_to_add)
 
-    def add_element_to_node(self, node: ET.Element, element_to_add: ET.Element,) -> None:
+    def add_document_to_node(self, node: ET.Element, document_to_add: str) -> None:
+        tree = ET.parse(document_to_add)
+        element_to_add = tree.getroot()
+        node.append(element_to_add)
+
+    def add_xml_string_to_node(self, node: ET.Element, xml_str_to_add: str)-> None:
+        root_element = ET.fromstring(xml_str_to_add)
+        node.append(root_element)
+
+    def add_element_to_node(self, node: ET.Element, element_to_add: ET.Element) -> None:
         node.append(element_to_add)
 
 

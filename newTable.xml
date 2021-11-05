@@ -871,10 +871,10 @@
             <name>parent_child_docs_rel</name>
             <folder>table{table_id}</folder>
             <description>
-                Tabellen indeholder relationer mellem parent- og child-dokumenter. 
-                Dette gælder både for containers, hvor parent-doumentet selv skal gemmes (emails m.m.)
-                og for archive-filer, hvor parent-dokumentet skal slettes (zip-filer m.m.).
-            </description>
+	    Tabellen indeholder relationer mellem parent- og child-dokumenter. 
+	    Dette gælder både for containers, hvor parent-doumentet selv skal gemmes (emails m.m.)
+	    og for archive-filer, hvor parent-dokumentet skal slettes (zip-filer m.m.).
+    </description>
             <columns>
                 <column>
                     <name>parent_id</name>
@@ -923,77 +923,77 @@
         <view>
             <name>AV_møde</name>
             <queryOriginal>	
-            SELECT dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, dagsorden.dagsorden_id, dagsorden.Body AS dagsordentekst, referat.referat_id, referat.Body AS referattekst
-            FROM dagsorden 
-            LEFT JOIN referat ON dagsorden.MøArt = referat.MøArt 
-            AND dagsorden.IndMøDato = referat.DateX 
-            WHERE dagsorden.IndMøDato = '2004-03-31'
-            AND dagsorden.MøArt = 'Formøder hos borgmesteren';
-            </queryOriginal>
+			SELECT dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, dagsorden.dagsorden_id, dagsorden.Body AS dagsordentekst, referat.referat_id, referat.Body AS referattekst
+			FROM dagsorden 
+			LEFT JOIN referat ON dagsorden.MøArt = referat.MøArt 
+			AND dagsorden.IndMøDato = referat.DateX 
+			WHERE dagsorden.IndMøDato = '2004-03-31'
+			AND dagsorden.MøArt = 'Formøder hos borgmesteren';
+			</queryOriginal>
             <description>SQL-forespørgsel, der henter mødeforum, mødedato, dagsorden_id, dagsordenteksten og eventuelt referat_id og referatteksten for et givet mødeforum på en given dato. For at hente en mødeoversigt kan man slette enten mødedato eller mødeforum fra WHERE-betingelserne, og ved at bruge LIKE i stedet for = i WHERE-betingelserne kan man søge på årstal fremfor en specifik dato. Forespørgslen virker ikke, hvis der ikke er en dagsorden.</description>
         </view>
         <view>
             <name>AV_dagsordenfiler</name>
             <queryOriginal>	
-            SELECT dagsorden.dagsorden_id, dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
-            FROM dagsorden
-            INNER JOIN dagsorden_fil
-            ON dagsorden.dagsorden_id = dagsorden_fil.dagsorden_id
-            INNER JOIN fil
-            ON dagsorden_fil.fil_id = fil.fil_id
-            WHERE dagsorden.MøArt = 'Chefmøde'
-            AND dagsorden.IndMøDato = '2005-01-11';
-            </queryOriginal>
+			SELECT dagsorden.dagsorden_id, dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM dagsorden
+			INNER JOIN dagsorden_fil
+			ON dagsorden.dagsorden_id = dagsorden_fil.dagsorden_id
+			INNER JOIN fil
+			ON dagsorden_fil.fil_id = fil.fil_id
+			WHERE dagsorden.MøArt = 'Chefmøde'
+			AND dagsorden.IndMøDato = '2005-01-11';
+			</queryOriginal>
             <description>SQL-forespørgsel, der henter dagsorden_id, mødeforum, mødedato og eventuelle tilknyttede filers navn og placering for en given dagsorden.</description>
         </view>
         <view>
             <name>AV_dagsordenbilag</name>
             <queryOriginal>	
-            SELECT dagsorden.dagsorden_id, dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, bilag.bilag_id, bilag.Dagsordenpunkt, bilag.Overskrift, bilag.Body AS bilagstekst, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
-            FROM dagsorden
-            INNER JOIN dagsorden_bilag
-            ON dagsorden.dagsorden_id = dagsorden_bilag.dagsorden_id
-            INNER JOIN bilag
-            ON dagsorden_bilag.bilag_id = bilag.bilag_id
-            LEFT JOIN bilag_fil
-            ON bilag.bilag_id = bilag_fil.bilag_id
-            LEFT JOIN fil
-            ON bilag_fil.fil_id = fil.fil_id
-            WHERE dagsorden.MøArt = 'Chefmøde'
-            AND dagsorden.IndMøDato = '2003-11-11';
-            </queryOriginal>
+			SELECT dagsorden.dagsorden_id, dagsorden.MøArt AS mødeforum, dagsorden.IndMøDato AS mødedato, bilag.bilag_id, bilag.Dagsordenpunkt, bilag.Overskrift, bilag.Body AS bilagstekst, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM dagsorden
+			INNER JOIN dagsorden_bilag
+			ON dagsorden.dagsorden_id = dagsorden_bilag.dagsorden_id
+			INNER JOIN bilag
+			ON dagsorden_bilag.bilag_id = bilag.bilag_id
+			LEFT JOIN bilag_fil
+			ON bilag.bilag_id = bilag_fil.bilag_id
+			LEFT JOIN fil
+			ON bilag_fil.fil_id = fil.fil_id
+			WHERE dagsorden.MøArt = 'Chefmøde'
+			AND dagsorden.IndMøDato = '2003-11-11';
+			</queryOriginal>
             <description>SQL-forespørgsel, der henter dagsorden_id, mødeforum, mødedato, dagsordenbilag og eventuelle tilknyttede bilagsfilers navn og placering.</description>
         </view>
         <view>
             <name>AV_referatfiler</name>
             <queryOriginal>	
-            SELECT referat.referat_id, referat.MøArt AS mødeforum, referat.DateX AS mødedato, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
-            FROM referat
-            INNER JOIN referat_fil
-            ON referat.referat_id = referat_fil.referat_id
-            INNER JOIN fil
-            ON referat_fil.fil_id = fil.fil_id
-            WHERE referat.MøArt = 'Afdelingsmøde'
-            AND referat.DateX = '2004-05-19';
-            </queryOriginal>
+			SELECT referat.referat_id, referat.MøArt AS mødeforum, referat.DateX AS mødedato, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM referat
+			INNER JOIN referat_fil
+			ON referat.referat_id = referat_fil.referat_id
+			INNER JOIN fil
+			ON referat_fil.fil_id = fil.fil_id
+			WHERE referat.MøArt = 'Afdelingsmøde'
+			AND referat.DateX = '2004-05-19';
+			</queryOriginal>
             <description>SQL-forespørgsel, der henter referat_id, mødeforum, mødedato og eventuelle tilknyttede filers navn og placering for et givent referat.</description>
         </view>
         <view>
             <name>AV_referatbilag</name>
             <queryOriginal>	
-            SELECT referat.referat_id, referat.MøArt AS mødeforum, referat.DateX AS mødedato, bilag.bilag_id, bilag.Dagsordenpunkt, bilag.Overskrift, bilag.Body AS bilagstekst, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
-            FROM referat
-            INNER JOIN referat_bilag
-            ON referat.referat_id = referat_bilag.referat_id
-            INNER JOIN bilag
-            ON referat_bilag.referat_id = bilag.bilag_id
-            LEFT JOIN bilag_fil
-            ON bilag.bilag_id = bilag_fil.bilag_id
-            LEFT JOIN fil
-            ON bilag_fil.fil_id = fil.fil_id
-            WHERE referat.MøArt = 'PK-gruppen'
-            AND referat.DateX = '2008-08-14';
-            </queryOriginal>
+			SELECT referat.referat_id, referat.MøArt AS mødeforum, referat.DateX AS mødedato, bilag.bilag_id, bilag.Dagsordenpunkt, bilag.Overskrift, bilag.Body AS bilagstekst, fil.fil_id AS filnummer, fil.filename AS filnavn, fil.doc_collection_id
+			FROM referat
+			INNER JOIN referat_bilag
+			ON referat.referat_id = referat_bilag.referat_id
+			INNER JOIN bilag
+			ON referat_bilag.referat_id = bilag.bilag_id
+			LEFT JOIN bilag_fil
+			ON bilag.bilag_id = bilag_fil.bilag_id
+			LEFT JOIN fil
+			ON bilag_fil.fil_id = fil.fil_id
+			WHERE referat.MøArt = 'PK-gruppen'
+			AND referat.DateX = '2008-08-14';
+			</queryOriginal>
             <description>SQL-forespørgsel, der henter referat_id, mødeforum, mødedato, referatbilag og eventuelle tilknyttede bilagsfilers navn og placering.</description>
         </view>
     </views>

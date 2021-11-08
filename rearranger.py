@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 from typing import Any, Dict, List
 from sys import argv
+from tiffprinter import stringToTiffPrinter
 
 
 archive_suffixes = [".zip", ".tar", ".gz", ".7z", ".cab", ".rar"]
@@ -146,6 +147,18 @@ def append_to_docIndex(docIndex: Path, xml_strings: List[str]) -> None:
         docIndex_handle.write(docindex_tag)
 
 
+
+def create_template_string(doc_elements: List[Dict]) -> str:
+    template_string = "This folder contained a file with an archive file format."
+    "It has been recursively unpacked and the files have been moved to a new directory."
+    "For information on the new files, see below:"
+    for doc_element in doc_elements:
+        doc_element_string = ""
+        for key in doc_element.keys:
+            doc_element_string += "{}: {}\n".format(key, doc_element[key])
+        template_string += doc_element_string
+    return template_string
+    
 if __name__ == "__main__":
     # Root is the directory that contains the docCollections.
     root = Path(argv[1])
@@ -169,8 +182,15 @@ if __name__ == "__main__":
             doc_elements, count = rearrange_files(
                 folder, new_docCollection, count
             )
+
+            # Add tiff template
+            tiff_template_string = create_template_string(doc_elements)
+            stringToTiffPrinter(tiff_template_string, doc_folder)
+            
             # Convert the doc_elements to xml strings
             # and append them to docIndex.
             doc_element_xml_strings = doc_elements_to_xml(doc_elements)
             append_to_docIndex(doc_index_path, doc_element_xml_strings)
         print(f"Finished processing {docCollection.name}.")
+
+

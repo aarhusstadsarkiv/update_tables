@@ -154,7 +154,7 @@ def create_template_string(doc_elements: List[Dict]) -> str:
     "For information on the new files, see below:"
     for doc_element in doc_elements:
         doc_element_string = ""
-        for key in doc_element.keys:
+        for key in doc_element:
             doc_element_string += "{}: {}\n".format(key, doc_element[key])
         template_string += doc_element_string
     return template_string
@@ -174,18 +174,24 @@ if __name__ == "__main__":
         print(f"Start processing of {docCollection.name}")
         extracted_folders = []
         for doc_folder in docCollection.iterdir():
-            for item in doc_folder.iterdir():
-                if item.suffix == ".extracted":
-                    extracted_folders.append(item)
+            if doc_folder.is_dir():
+                for item in doc_folder.iterdir():
+                    if item.suffix == ".extracted":
+                        extracted_folders.append(item)
 
         for folder in extracted_folders:
             doc_elements, count = rearrange_files(
                 folder, new_docCollection, count
             )
 
+            for element in doc_elements:
+                print(element["oFn"])
+            
             # Add tiff template
+            # Tiff template is not added to the correct directory (the doc_folder).
             tiff_template_string = create_template_string(doc_elements)
-            stringToTiffPrinter(tiff_template_string, doc_folder)
+            stringToTiffPrinter(tiff_template_string, (folder/"template.tiff"))
+            
             
             # Convert the doc_elements to xml strings
             # and append them to docIndex.

@@ -32,7 +32,7 @@ def stringToTiffPrinter(input: str, dest: Path) -> None:
         textFont = ImageFont.truetype("consola.ttf", 18)
     # for ubuntu compatibility
     except OSError:
-        textFont = ImageFont.load_default()
+        textFont = ImageFont.truetype("DejaVuSansMono.ttf", 20)
 
     textVerticalMargin: int = 20
     textHorizontalMargin: int = 16

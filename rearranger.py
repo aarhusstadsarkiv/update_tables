@@ -147,9 +147,10 @@ def append_to_docIndex(docIndex: Path, xml_strings: List[str]) -> None:
         docIndex_handle.write(docindex_tag)
 
 
-
 def create_template_string(doc_elements: List[Dict]) -> str:
-    template_string = "This folder contained a file with an archive file format."
+    template_string = (
+        "This folder contained a file with an archive file format."
+    )
     "It has been recursively unpacked and the files have been moved to a new directory."
     "For information on the new files, see below:"
     for doc_element in doc_elements:
@@ -158,13 +159,14 @@ def create_template_string(doc_elements: List[Dict]) -> str:
             doc_element_string += "{}: {}\n".format(key, doc_element[key])
         template_string += doc_element_string
     return template_string
-    
+
+
 if __name__ == "__main__":
-    '''
-        Argument 1 is the directory that contains the docCollections.
-        Argument 2 is the new docCollection number.
-        Argument 3 is the counter for the new dID, i.e. the last dID + 1.
-    '''
+    """
+    Argument 1 is the directory that contains the docCollections.
+    Argument 2 is the new docCollection number.
+    Argument 3 is the counter for the new dID, i.e. the last dID + 1.
+    """
     # Root is the directory that contains the docCollections.
     root = Path(argv[1])
     new_docCollection = root / ("docCollection" + argv[2])
@@ -191,17 +193,15 @@ if __name__ == "__main__":
 
             for element in doc_elements:
                 print(element["oFn"])
-            
+
             # Add tiff template
-            # Tiff template is not added to the correct directory (the doc_folder).
             tiff_template_string = create_template_string(doc_elements)
-            stringToTiffPrinter(tiff_template_string, (folder.parent/"1.tiff"))
-            
-            
+            stringToTiffPrinter(
+                tiff_template_string, (folder.parent / "1.tiff")
+            )
+
             # Convert the doc_elements to xml strings
             # and append them to docIndex.
             doc_element_xml_strings = doc_elements_to_xml(doc_elements)
             append_to_docIndex(doc_index_path, doc_element_xml_strings)
         print(f"Finished processing {docCollection.name}.")
-
-

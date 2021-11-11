@@ -160,6 +160,11 @@ def create_template_string(doc_elements: List[Dict]) -> str:
     return template_string
     
 if __name__ == "__main__":
+    '''
+        Argument 1 is the directory that contains the docCollections.
+        Argument 2 is the new docCollection number.
+        Argument 3 is the counter for the new dID, i.e. the last dID + 1.
+    '''
     # Root is the directory that contains the docCollections.
     root = Path(argv[1])
     new_docCollection = root / ("docCollection" + argv[2])
@@ -190,7 +195,7 @@ if __name__ == "__main__":
             # Add tiff template
             # Tiff template is not added to the correct directory (the doc_folder).
             tiff_template_string = create_template_string(doc_elements)
-            stringToTiffPrinter(tiff_template_string, (folder/"template.tiff"))
+            stringToTiffPrinter(tiff_template_string, (folder.parent/"1.tiff"))
             
             
             # Convert the doc_elements to xml strings

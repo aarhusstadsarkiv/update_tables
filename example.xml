@@ -1,3 +1,4 @@
+<table>
 <name>dokumenter</name>
 <folder>table2</folder>
 <description>Tabel der indeholder oplysninger om dokumenter</description>
@@ -46,7 +47,7 @@
 <nullable>false</nullable>
 <description>Entydigt ikke-betydningsbærende ID (primærnøgle)</description>
 </column>
-</columns>
+</columns> 
 <primaryKey>
 <name>PK_dokumenter</name>
 <column>id</column>

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import shutil
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 from sys import argv
 from tiffprinter import stringToTiffPrinter
 import xml.etree.ElementTree as ET
@@ -39,7 +39,7 @@ def is_archive(file_name: str) -> bool:
 
 def rearrange_files(
     extracted_folder: Path, new_doc_collection: Path, count: int
-) -> List[Dict]:
+) -> Tuple[List[Dict], int]:
     """
     Description:
     -------------
@@ -162,9 +162,10 @@ def create_template_string(doc_elements: List[Dict], folder_name) -> str:
         template_string += doc_element_string
     return template_string
 
-def create_parent_child_table(doc_elements, table_file: Path):
+def update_parent_child_table(doc_elements, root):
     '''
-        Creates a new table as xml in the Tables folder of the form:
+        Updates the newly created table in the Tables folder
+        with records on the form:
         <table some_namespaces>
             <row>
                 <c1> parent id </c1>
@@ -172,17 +173,64 @@ def create_parent_child_table(doc_elements, table_file: Path):
                 <c3> new docCollection </c3>
             </row>
         </table>
-        where each row represents a document that was to a new docCollection.
+        where each row represents a document that was moved to a new docCollection.
     '''
     colomn_keys = ["pID", "dID", "dCf"]
-    root = ET.Element("table")
     for doc_element in doc_elements:
         row = ET.SubElement(root, "row")
         for colomn_count, colomn_key in enumerate(colomn_keys, start=1):
             ET.SubElement(row, (f"c{colomn_count}")).text = f"{doc_element[colomn_key]}"
-    tree = ET.ElementTree(root)
-    tree.write(table_file)
+    # tree = ET.ElementTree(root)
+    # tree.write(table_file)
 
+def create_new_table_index_element(table_index_path: Path, folder_name, row_count):
+    tree = ET.parse(table_index_path)
+    root = tree.getroot()
+    tables_element = root.find("{http://www.sa.dk/xmlns/diark/1.0}tables")
+    table_root = ET.SubElement(tables_element, "table")
+    description = "Parent child relation table for moved files originally located in a container."
+    
+    ET.SubElement(table_root, "name").text = "parentChildRelationTable"
+    ET.SubElement(table_root, "folder").text = folder_name
+    ET.SubElement(table_root, "description").text = description
+    columns = ET.SubElement(table_root, "columns")
+    
+    column1 = ET.SubElement(columns, "column")
+    ET.SubElement(column1, "name").text = "parentID"
+    ET.SubElement(column1, "columnID").text = "c1"
+    ET.SubElement(column1, "type").text = "INTEGER"
+    ET.SubElement(column1, "typeOriginal").text = "INT UNSIGNED"
+    ET.SubElement(column1, "nullable").text = "false"
+    ET.SubElement(column1, "description").text = "Entydigt ID for dokumentets Parent mappe."
+    ET.SubElement(column1, "functionalDescription").text = "parentDokumentIdentifikation"
+
+    column2 = ET.SubElement(columns, "column")
+    ET.SubElement(column2, "name").text = "childID"
+    ET.SubElement(column2, "columnID").text = "c2"
+    ET.SubElement(column2, "type").text = "INTEGER"
+    ET.SubElement(column2, "typeOriginal").text = "INT UNSIGNED"
+    ET.SubElement(column2, "nullable").text = "false"
+    ET.SubElement(column2, "description").text = "Entydigt ID for dokumentets mappe."
+    ET.SubElement(column2, "functionalDescription").text = "childDokumentIdentifikation"
+
+    column3 = ET.SubElement(columns, "column")
+    ET.SubElement(column3, "name").text = "childDocCollection"
+    ET.SubElement(column3, "columnID").text = "c3"
+    ET.SubElement(column3, "type").text = "CHARACTER VARYING(100)"
+    ET.SubElement(column3, "typeOriginal").text = "VARCHAR"
+    ET.SubElement(column3, "nullable").text = "false"
+    ET.SubElement(column3, "description").text = "Entydigt ID for den docCollection, som dokumentet er flyttet til."
+    ET.SubElement(column3, "functionalDescription").text = "childdokumentDocCollectionIdentifikation"
+
+    primary_key = ET.SubElement(table_root, "primaryKey")
+    ET.SubElement(primary_key, "name").text="PK_parentChildRelationTable"
+    ET.SubElement(primary_key, "column").text="childID"
+
+    row_count = ET.SubElement(table_root, "rows").text=f"{row_count}"
+
+    tree = ET.ElementTree(root)
+    tree.write(table_index_path)
+    
 if __name__ == "__main__":
     """
     Argument 1 is the directory that contains the docCollections.
@@ -192,13 +240,17 @@ if __name__ == "__main__":
     """
 
     # Root is the directory that contains the docCollections.
+    ET.register_namespace("", "http://www.sa.dk/xmlns/diark/1.0")
     root = Path(argv[1])
     new_docCollection = root / ("docCollection" + argv[2])
     doc_index_path = root.parent / "Indices" / "docIndex.xml"
+    table_index_path = root.parent / "Indices" / "tableIndex.xml"
     table_folder_path = root.parent / "Tables" / ("table" + argv[4])
     table_folder_path.mkdir()
     table_xml_file = table_folder_path / f"table{argv[4]}.xml"
+    parent_child_table_root = ET.Element("table")
 
+    row_count = 0
     try:
         count = int(argv[3])
     except ValueError:
@@ -232,5 +284,11 @@ if __name__ == "__main__":
             doc_element_xml_strings = doc_elements_to_xml(doc_elements)
             append_to_docIndex(doc_index_path, doc_element_xml_strings)
 
-            create_parent_child_table(doc_elements, table_xml_file)
+            update_parent_child_table(doc_elements, parent_child_table_root)
+            row_count += len(doc_elements)
+
+        parent_child_tree = ET.ElementTree(parent_child_table_root)
+        parent_child_tree.write(table_xml_file)
+        
+        create_new_table_index_element(table_index_path, table_folder_path.name, row_count)
         print(f"Finished processing {docCollection.name}.")

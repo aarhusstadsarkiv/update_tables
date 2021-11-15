@@ -1,0 +1,65 @@
+<name>dokumenter</name>
+<folder>table2</folder>
+<description>Tabel der indeholder oplysninger om dokumenter</description>
+<columns>
+<column>
+<name>dokumentId</name>
+<columnID>c1</columnID>
+<type>INTEGER</type>
+<typeOriginal>INT UNSIGNED</typeOriginal>
+<nullable>true</nullable>
+<description>Entydigt ID for dokumentet i arkiveringsversionen</description>
+<functionalDescription>Dokumentidentifikation</functionalDescription>
+</column>
+<column>
+<name>dato</name>
+<columnID>c2</columnID>
+<type>DATE</type>
+<typeOriginal>DATE</typeOriginal>
+<nullable>true</nullable>
+<description>Dato dokumentet blev oprettet</description>
+<functionalDescription>Dokumentdato</functionalDescription>
+</column>
+<column>
+<name>dokumenttitel</name>
+<columnID>c3</columnID>
+<type>CHARACTER VARYING(80)</type>
+<typeOriginal>VARCHAR</typeOriginal>
+<nullable>true</nullable>
+<description>Dokumentets titel i driftssystemet</description>
+<functionalDescription>Dokumenttitel</functionalDescription>
+</column>
+<column>
+<name>lagringsform</name>
+<columnID>c4</columnID>
+<type>SMALLINT</type>
+<typeOriginal>TINYINT UNSIGNED</typeOriginal>
+<nullable>true</nullable>
+<description>Angiver dokumentets lagringsform, jf. bek. 1007, bilag 6, figur 6.5</description>
+<functionalDescription>Lagringsform</functionalDescription>
+</column>
+<column>
+<name>id</name>
+<columnID>c5</columnID>
+<type>INTEGER</type>
+<typeOriginal>INT UNSIGNED</typeOriginal>
+<nullable>false</nullable>
+<description>Entydigt ikke-betydningsbærende ID (primærnøgle)</description>
+</column>
+</columns>
+<primaryKey>
+<name>PK_dokumenter</name>
+<column>id</column>
+</primaryKey>
+<foreignKeys>
+<foreignKey>
+<name>FK_dokumenter_av_kodetabel_lagringsform</name>
+<referencedTable>av_kodetabel_lagringsform</referencedTable>
+<reference>
+<column>lagringsform</column>
+<referenced>lagringsform</referenced>
+</reference>
+</foreignKey>
+</foreignKeys>
+<rows>15</rows>
+</table>

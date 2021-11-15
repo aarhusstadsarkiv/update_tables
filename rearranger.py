@@ -4,6 +4,7 @@ import shutil
 from typing import Any, Dict, List
 from sys import argv
 from tiffprinter import stringToTiffPrinter
+import xml.etree.ElementTree as ET
 
 
 archive_suffixes = [".zip", ".tar", ".gz", ".7z", ".cab", ".rar"]
@@ -69,7 +70,7 @@ def rearrange_files(
                 destination: Path = new_doc_collection / str(count) / filename
                 destination.parent.mkdir()
                 shutil.copy(file_path, destination)
-                pid = extracted_folder.name
+                pid = extracted_folder.parent.name
                 doc_element = {
                     "pID": pid,
                     "dID": count,
@@ -147,30 +148,56 @@ def append_to_docIndex(docIndex: Path, xml_strings: List[str]) -> None:
         docIndex_handle.write(docindex_tag)
 
 
-def create_template_string(doc_elements: List[Dict]) -> str:
+def create_template_string(doc_elements: List[Dict], folder_name) -> str:
     template_string = (
-        "This folder contained a file with an archive file format."
+        "This folder originally contained an archive file \n"
+        "that has been recursively unpacked. \n"
+    "The containing files have been moved to a new directory:\n \n"
     )
-    "It has been recursively unpacked and the files have been moved to a new directory."
-    "For information on the new files, see below:"
     for doc_element in doc_elements:
         doc_element_string = ""
-        for key in doc_element:
-            doc_element_string += "{}: {}\n".format(key, doc_element[key])
+        doc_element_string += "{}: {}\n".format("Original filename", doc_element["oFn"])
+        doc_element_string += "{}: {} / {}\n \n".format("Moved to", doc_element["dCf"], doc_element["dID"])
+        # doc_element_string += "{}: {}\n".format("Top parent folder", doc_element["pID"])
         template_string += doc_element_string
     return template_string
 
+def create_parent_child_table(doc_elements, table_file: Path):
+    '''
+        Creates a new table as xml in the Tables folder of the form:
+        <table some_namespaces>
+            <row>
+                <c1> parent id </c1>
+                <c2> child id (new folder name)</c2>
+                <c3> new docCollection </c3>
+            </row>
+        </table>
+        where each row represents a document that was to a new docCollection.
+    '''
+    colomn_keys = ["pID", "dID", "dCf"]
+    root = ET.Element("table")
+    for doc_element in doc_elements:
+        row = ET.SubElement(root, "row")
+        for colomn_count, colomn_key in enumerate(colomn_keys, start=1):
+            ET.SubElement(row, (f"c{colomn_count}")).text = f"{doc_element[colomn_key]}"
+    tree = ET.ElementTree(root)
+    tree.write(table_file)
 
 if __name__ == "__main__":
     """
     Argument 1 is the directory that contains the docCollections.
     Argument 2 is the new docCollection number.
     Argument 3 is the counter for the new dID, i.e. the last dID + 1.
+    Argument 4 is the new table number for the parent child relation table.
     """
+
     # Root is the directory that contains the docCollections.
     root = Path(argv[1])
     new_docCollection = root / ("docCollection" + argv[2])
     doc_index_path = root.parent / "Indices" / "docIndex.xml"
+    table_folder_path = root.parent / "Tables" / ("table" + argv[4])
+    table_folder_path.mkdir()
+    table_xml_file = table_folder_path / f"table{argv[4]}.xml"
 
     try:
         count = int(argv[3])
@@ -195,7 +222,7 @@ if __name__ == "__main__":
                 print(element["oFn"])
 
             # Add tiff template
-            tiff_template_string = create_template_string(doc_elements)
+            tiff_template_string = create_template_string(doc_elements, folder.name)
             stringToTiffPrinter(
                 tiff_template_string, (folder.parent / "1.tiff")
             )
@@ -204,4 +231,6 @@ if __name__ == "__main__":
             # and append them to docIndex.
             doc_element_xml_strings = doc_elements_to_xml(doc_elements)
             append_to_docIndex(doc_index_path, doc_element_xml_strings)
+
+            create_parent_child_table(doc_elements, table_xml_file)
         print(f"Finished processing {docCollection.name}.")

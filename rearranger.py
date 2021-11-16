@@ -258,20 +258,20 @@ def create_new_table_index_element(
 
 
 if __name__ == "__main__":
-    
+
     if argv[1] == "help":
         print(
-        """
+            """
         Use as `python rearranger.py docCollection_dir
         newDocCollectionNumber, dIDCounter, newTableNumber`
-        
+
         Argument 1 is the directory that contains the docCollections.
         Argument 2 is the new docCollection number.
         Argument 3 is the counter for the new dID, i.e. the last dID + 1.
         Argument 4 is the new table number for the parent child relation table.
 
         """
-    )
+        )
 
     else:
 
@@ -322,7 +322,9 @@ if __name__ == "__main__":
                 doc_element_xml_strings = doc_elements_to_xml(doc_elements)
                 append_to_docIndex(doc_index_path, doc_element_xml_strings)
 
-                update_parent_child_table(doc_elements, parent_child_table_root)
+                update_parent_child_table(
+                    doc_elements, parent_child_table_root
+                )
                 row_count += len(doc_elements)
 
             parent_child_tree = ET.ElementTree(parent_child_table_root)

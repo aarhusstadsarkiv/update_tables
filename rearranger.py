@@ -187,8 +187,6 @@ def update_parent_child_table(doc_elements, root):
             ET.SubElement(
                 row, (f"c{colomn_count}")
             ).text = f"{doc_element[colomn_key]}"
-    # tree = ET.ElementTree(root)
-    # tree.write(table_file)
 
 
 def create_new_table_index_element(

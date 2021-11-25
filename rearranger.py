@@ -61,7 +61,6 @@ def rearrange_files(
     count: int. The updated count variable.
 
     """
-    new_doc_collection.mkdir()
     doc_elements = []
     for path, subdirs, filenames in os.walk(extracted_folder):
         for filename in filenames:
@@ -279,10 +278,11 @@ if __name__ == "__main__":
         ET.register_namespace("", "http://www.sa.dk/xmlns/diark/1.0")
         root = Path(argv[1])
         new_docCollection = root / ("docCollection" + argv[2])
+        new_docCollection.mkdir(exist_ok=True)
         doc_index_path = root.parent / "Indices" / "docIndex.xml"
         table_index_path = root.parent / "Indices" / "tableIndex.xml"
         table_folder_path = root.parent / "Tables" / ("table" + argv[4])
-        table_folder_path.mkdir()
+        table_folder_path.mkdir(exist_ok=True)
         table_xml_file = table_folder_path / f"table{argv[4]}.xml"
         parent_child_table_root = ET.Element("table")
 
@@ -302,13 +302,21 @@ if __name__ == "__main__":
                             extracted_folders.append(item)
 
             for folder in extracted_folders:
-                doc_elements, count = rearrange_files(
+                try:
+                    doc_elements, count = rearrange_files(
                     folder, new_docCollection, count
-                )
+                    )
+                except FileExistsError as e:
+                    print("Skipping file since it already exists.")
+                    print(e)
+                    count+=1
 
-                for element in doc_elements:
-                    print(element["oFn"])
-
+                
+                try:
+                    for element in doc_elements:
+                        print(element["oFn"])
+                except NameError:
+                    continue
                 # Add tiff template
                 tiff_template_string = create_template_string(
                     doc_elements, folder.name

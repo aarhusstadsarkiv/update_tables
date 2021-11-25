@@ -256,6 +256,11 @@ def create_new_table_index_element(
     tree.write(table_index_path)
 
 
+def make_copy(path: Path):
+    copy_destination = path.with_name(path.name + "Copy")
+    shutil.copy(path, copy_destination)
+    return copy_destination
+
 if __name__ == "__main__":
 
     if argv[1] == "help":
@@ -280,6 +285,7 @@ if __name__ == "__main__":
         new_docCollection = root / ("docCollection" + argv[2])
         new_docCollection.mkdir(exist_ok=True)
         doc_index_path = root.parent / "Indices" / "docIndex.xml"
+        doc_index_copy = make_copy(doc_index_path)
         table_index_path = root.parent / "Indices" / "tableIndex.xml"
         table_folder_path = root.parent / "Tables" / ("table" + argv[4])
         table_folder_path.mkdir(exist_ok=True)
@@ -328,7 +334,7 @@ if __name__ == "__main__":
                 # Convert the doc_elements to xml strings
                 # and append them to docIndex.
                 doc_element_xml_strings = doc_elements_to_xml(doc_elements)
-                append_to_docIndex(doc_index_path, doc_element_xml_strings)
+                append_to_docIndex(doc_index_copy, doc_element_xml_strings)
 
                 update_parent_child_table(
                     doc_elements, parent_child_table_root

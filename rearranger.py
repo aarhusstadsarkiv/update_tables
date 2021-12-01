@@ -342,6 +342,7 @@ if __name__ == "__main__":
                 row_count += len(doc_elements)
 
             parent_child_tree = ET.ElementTree(parent_child_table_root)
+            #ET.indent(parent_child_tree, "    ", 0)
             parent_child_tree.write(table_xml_file)
 
             create_new_table_index_element(

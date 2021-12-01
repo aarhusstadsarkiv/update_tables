@@ -61,7 +61,6 @@ def rearrange_files(
     count: int. The updated count variable.
 
     """
-    new_doc_collection.mkdir()
     doc_elements = []
     for path, subdirs, filenames in os.walk(extracted_folder):
         for filename in filenames:
@@ -257,6 +256,11 @@ def create_new_table_index_element(
     tree.write(table_index_path)
 
 
+def make_copy(path: Path):
+    copy_destination = path.with_name(path.name + "Copy")
+    shutil.copy(path, copy_destination)
+    return copy_destination
+
 if __name__ == "__main__":
 
     if argv[1] == "help":
@@ -279,10 +283,12 @@ if __name__ == "__main__":
         ET.register_namespace("", "http://www.sa.dk/xmlns/diark/1.0")
         root = Path(argv[1])
         new_docCollection = root / ("docCollection" + argv[2])
+        new_docCollection.mkdir(exist_ok=True)
         doc_index_path = root.parent / "Indices" / "docIndex.xml"
+        doc_index_copy = make_copy(doc_index_path)
         table_index_path = root.parent / "Indices" / "tableIndex.xml"
         table_folder_path = root.parent / "Tables" / ("table" + argv[4])
-        table_folder_path.mkdir()
+        table_folder_path.mkdir(exist_ok=True)
         table_xml_file = table_folder_path / f"table{argv[4]}.xml"
         parent_child_table_root = ET.Element("table")
 
@@ -302,13 +308,21 @@ if __name__ == "__main__":
                             extracted_folders.append(item)
 
             for folder in extracted_folders:
-                doc_elements, count = rearrange_files(
+                try:
+                    doc_elements, count = rearrange_files(
                     folder, new_docCollection, count
-                )
+                    )
+                except FileExistsError as e:
+                    print("Skipping file since it already exists.")
+                    print(e)
+                    count+=1
 
-                for element in doc_elements:
-                    print(element["oFn"])
-
+                
+                try:
+                    for element in doc_elements:
+                        print(element["oFn"])
+                except NameError:
+                    continue
                 # Add tiff template
                 tiff_template_string = create_template_string(
                     doc_elements, folder.name
@@ -320,7 +334,7 @@ if __name__ == "__main__":
                 # Convert the doc_elements to xml strings
                 # and append them to docIndex.
                 doc_element_xml_strings = doc_elements_to_xml(doc_elements)
-                append_to_docIndex(doc_index_path, doc_element_xml_strings)
+                append_to_docIndex(doc_index_copy, doc_element_xml_strings)
 
                 update_parent_child_table(
                     doc_elements, parent_child_table_root
@@ -328,6 +342,7 @@ if __name__ == "__main__":
                 row_count += len(doc_elements)
 
             parent_child_tree = ET.ElementTree(parent_child_table_root)
+            #ET.indent(parent_child_tree, "    ", 0)
             parent_child_tree.write(table_xml_file)
 
             create_new_table_index_element(

@@ -258,67 +258,79 @@ def create_new_table_index_element(
 
 
 if __name__ == "__main__":
-    """
-    Argument 1 is the directory that contains the docCollections.
-    Argument 2 is the new docCollection number.
-    Argument 3 is the counter for the new dID, i.e. the last dID + 1.
-    Argument 4 is the new table number for the parent child relation table.
-    """
 
-    # Root is the directory that contains the docCollections.
-    ET.register_namespace("", "http://www.sa.dk/xmlns/diark/1.0")
-    root = Path(argv[1])
-    new_docCollection = root / ("docCollection" + argv[2])
-    doc_index_path = root.parent / "Indices" / "docIndex.xml"
-    table_index_path = root.parent / "Indices" / "tableIndex.xml"
-    table_folder_path = root.parent / "Tables" / ("table" + argv[4])
-    table_folder_path.mkdir()
-    table_xml_file = table_folder_path / f"table{argv[4]}.xml"
-    parent_child_table_root = ET.Element("table")
+    if argv[1] == "help":
+        print(
+            """
+        Use as `python rearranger.py docCollection_dir
+        newDocCollectionNumber, dIDCounter, newTableNumber`
 
-    row_count = 0
-    try:
-        count = int(argv[3])
-    except ValueError:
-        print(f"Could not parse the string: {argv[3]} as an integer.")
+        Argument 1 is the directory that contains the docCollections.
+        Argument 2 is the new docCollection number.
+        Argument 3 is the counter for the new dID, i.e. the last dID + 1.
+        Argument 4 is the new table number for the parent child relation table.
 
-    for docCollection in root.iterdir():
-        print(f"Start processing of {docCollection.name}")
-        extracted_folders = []
-        for doc_folder in docCollection.iterdir():
-            if doc_folder.is_dir():
-                for item in doc_folder.iterdir():
-                    if item.suffix == ".extracted":
-                        extracted_folders.append(item)
-
-        for folder in extracted_folders:
-            doc_elements, count = rearrange_files(
-                folder, new_docCollection, count
-            )
-
-            for element in doc_elements:
-                print(element["oFn"])
-
-            # Add tiff template
-            tiff_template_string = create_template_string(
-                doc_elements, folder.name
-            )
-            stringToTiffPrinter(
-                tiff_template_string, (folder.parent / "1.tiff")
-            )
-
-            # Convert the doc_elements to xml strings
-            # and append them to docIndex.
-            doc_element_xml_strings = doc_elements_to_xml(doc_elements)
-            append_to_docIndex(doc_index_path, doc_element_xml_strings)
-
-            update_parent_child_table(doc_elements, parent_child_table_root)
-            row_count += len(doc_elements)
-
-        parent_child_tree = ET.ElementTree(parent_child_table_root)
-        parent_child_tree.write(table_xml_file)
-
-        create_new_table_index_element(
-            table_index_path, table_folder_path.name, row_count
+        """
         )
-        print(f"Finished processing {docCollection.name}.")
+
+    else:
+
+        # Root is the directory that contains the docCollections.
+        ET.register_namespace("", "http://www.sa.dk/xmlns/diark/1.0")
+        root = Path(argv[1])
+        new_docCollection = root / ("docCollection" + argv[2])
+        doc_index_path = root.parent / "Indices" / "docIndex.xml"
+        table_index_path = root.parent / "Indices" / "tableIndex.xml"
+        table_folder_path = root.parent / "Tables" / ("table" + argv[4])
+        table_folder_path.mkdir()
+        table_xml_file = table_folder_path / f"table{argv[4]}.xml"
+        parent_child_table_root = ET.Element("table")
+
+        row_count = 0
+        try:
+            count = int(argv[3])
+        except ValueError:
+            print(f"Could not parse the string: {argv[3]} as an integer.")
+
+        for docCollection in root.iterdir():
+            print(f"Start processing of {docCollection.name}")
+            extracted_folders = []
+            for doc_folder in docCollection.iterdir():
+                if doc_folder.is_dir():
+                    for item in doc_folder.iterdir():
+                        if item.suffix == ".extracted":
+                            extracted_folders.append(item)
+
+            for folder in extracted_folders:
+                doc_elements, count = rearrange_files(
+                    folder, new_docCollection, count
+                )
+
+                for element in doc_elements:
+                    print(element["oFn"])
+
+                # Add tiff template
+                tiff_template_string = create_template_string(
+                    doc_elements, folder.name
+                )
+                stringToTiffPrinter(
+                    tiff_template_string, (folder.parent / "1.tiff")
+                )
+
+                # Convert the doc_elements to xml strings
+                # and append them to docIndex.
+                doc_element_xml_strings = doc_elements_to_xml(doc_elements)
+                append_to_docIndex(doc_index_path, doc_element_xml_strings)
+
+                update_parent_child_table(
+                    doc_elements, parent_child_table_root
+                )
+                row_count += len(doc_elements)
+
+            parent_child_tree = ET.ElementTree(parent_child_table_root)
+            parent_child_tree.write(table_xml_file)
+
+            create_new_table_index_element(
+                table_index_path, table_folder_path.name, row_count
+            )
+            print(f"Finished processing {docCollection.name}.")

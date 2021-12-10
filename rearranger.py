@@ -307,7 +307,7 @@ if __name__ == "__main__":
                     tiff_template_string, (folder.parent / "1.tiff")
                 )
 
-                # Convert the doc_elements to xml strings
+                # Convert the doc_elements to xml ET.Elements
                 # and append them to docIndex.
                 doc_element_xml = doc_elements_to_xml(doc_elements)
                 append_to_docIndex(doc_index_copy, doc_element_xml)

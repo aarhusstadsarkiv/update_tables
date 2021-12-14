@@ -233,7 +233,8 @@ def create_new_table_index_element(
 
 
 def make_copy(path: Path):
-    copy_destination = path.with_name(path.name + "Copy")
+    path_name = path.name.split(".")[0]
+    copy_destination = path.parent / (path_name + "Copy" + ".xml")
     shutil.copy(path, copy_destination)
     return copy_destination
 

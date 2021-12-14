@@ -120,7 +120,7 @@ def append_to_docIndex(docIndex: Path, xml_elements: List[ET.Element]) -> None:
     for element in xml_elements:
         root.append(element)
         
-    tree.write(docIndex) 
+    tree.write(docIndex, encoding="UTF8") 
 
 
 def create_template_string(doc_elements: List[Dict], folder_name) -> str:
@@ -229,7 +229,7 @@ def create_new_table_index_element(
     row_count = ET.SubElement(table_root, "rows").text = f"{row_count}"
 
     tree = ET.ElementTree(root)
-    tree.write(table_index_path)
+    tree.write(table_index_path, encoding="UTF8")
 
 
 def make_copy(path: Path):
@@ -319,7 +319,7 @@ if __name__ == "__main__":
 
             parent_child_tree = ET.ElementTree(parent_child_table_root)
             #ET.indent(parent_child_tree, "    ", 0)
-            parent_child_tree.write(table_xml_file)
+            parent_child_tree.write(table_xml_file, encoding="UTF8")
 
             create_new_table_index_element(
                 table_index_path, table_folder_path.name, row_count

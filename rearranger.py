@@ -115,12 +115,12 @@ def doc_elements_to_xml(doc_elements: List[Dict[str, Any]]) -> List[ET.Element]:
         
     
 def append_to_docIndex(docIndex: Path, xml_elements: List[ET.Element]) -> None:
-    tree = ET.parse(docIndex)
+    tree = ET.parse(docIndex, parser=ET.XMLParser(encoding="UTF-8"))
     root = tree.getroot()
     for element in xml_elements:
         root.append(element)
         
-    tree.write(docIndex, encoding="UTF8") 
+    tree.write(docIndex, encoding="UTF-8")
 
 
 def create_template_string(doc_elements: List[Dict], folder_name) -> str:
@@ -167,7 +167,7 @@ def update_parent_child_table(doc_elements, root):
 def create_new_table_index_element(
     table_index_path: Path, folder_name, row_count
 ):
-    tree = ET.parse(table_index_path)
+    tree = ET.parse(table_index_path, parser=ET.XMLParser(encoding="UTF-8"))
     root = tree.getroot()
     tables_element = root.find("{http://www.sa.dk/xmlns/diark/1.0}tables")
     table_root = ET.SubElement(tables_element, "table")
@@ -229,7 +229,7 @@ def create_new_table_index_element(
     row_count = ET.SubElement(table_root, "rows").text = f"{row_count}"
 
     tree = ET.ElementTree(root)
-    tree.write(table_index_path, encoding="UTF8")
+    tree.write(table_index_path, encoding="UTF-8")
 
 
 def make_copy(path: Path):
@@ -304,9 +304,15 @@ if __name__ == "__main__":
                 tiff_template_string = create_template_string(
                     doc_elements, folder.name
                 )
-                stringToTiffPrinter(
-                    tiff_template_string, (folder.parent / "1.tiff")
-                )
+
+                try:
+                    stringToTiffPrinter(
+                        tiff_template_string, (folder.parent / "1.tiff")
+                    )
+                except OSError as e:
+                    print(f"An OSError occured with message: {e}")
+                    print("Could not save the tiff template, or it may be corrupted.")
+                    
 
                 # Convert the doc_elements to xml ET.Elements
                 # and append them to docIndex.
@@ -320,9 +326,11 @@ if __name__ == "__main__":
 
             parent_child_tree = ET.ElementTree(parent_child_table_root)
             #ET.indent(parent_child_tree, "    ", 0)
-            parent_child_tree.write(table_xml_file, encoding="UTF8")
-
-            create_new_table_index_element(
-                table_index_path, table_folder_path.name, row_count
-            )
+            parent_child_tree.write(table_xml_file, encoding="UTF-8")
             print(f"Finished processing {docCollection.name}.")
+
+        # Create the new table index element
+        # for the parent child relation table.    
+        create_new_table_index_element(
+            table_index_path, table_folder_path.name, row_count
+        )

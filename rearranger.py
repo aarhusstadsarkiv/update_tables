@@ -83,12 +83,11 @@ def rearrange_files(
     return doc_elements, count
 
 
-def doc_elements_to_xml(doc_elements: List[Dict[str, Any]]) -> List[str]:
+def doc_elements_to_xml(doc_elements: List[Dict[str, Any]]) -> List[ET.Element]:
     """
     Description:
     ------------
-    Converts a list of doc element dictionaries to a list of strings.
-    Each string is an xml representation of a doc element.
+    Converts a list of doc element dictionaries to a list ET.Element objects.
 
     Parameters:
     -----------
@@ -96,55 +95,32 @@ def doc_elements_to_xml(doc_elements: List[Dict[str, Any]]) -> List[str]:
 
     Returns:
     --------
-    xml_strings: List[str]. The doc_elements as a list of xml strings.
+    xml_doc_elements: List[ET.Element]. The doc_elements as a list of Et.Element objects.
     """
-    xml_strings = []
+    xml_doc_elements = []
     for doc_element in doc_elements:
-        xml_str = "<doc>\n"
+        doc_ET_element = ET.Element("doc")
+        
         for key in doc_element.keys():
-            xml_str += (
-                "        <"
-                + key
-                + ">"
-                + str(doc_element[key])
-                + "</"
-                + key
-                + ">"
-                + "\n"
-            )
-        xml_str += "    </doc>"
-        xml_strings.append(xml_str)
-    return xml_strings
-
-
-def append_to_docIndex(docIndex: Path, xml_strings: List[str]) -> None:
-    # Open the file in binary read/write mode.
-    # "rb+" does not overwrite the file like wb+.
-    with open(docIndex, "rb+") as docIndex_handle:
-        # The </docIndex> tag is 11 ASCII chars
-        # long plus a newline char.
-        # This gives us 12 ASCII
-        # since UTF-8 is ASCII compatible.
-        # We thus go to 12 bytes before EOF.
-        docIndex_handle.seek(-12, os.SEEK_END)
-        docindex_tag = docIndex_handle.read(12)
-
-        # print(docindex_tag)
-        # Move the file pointer back after read of docIndex tag.
-        docIndex_handle.seek(-12, os.SEEK_END)
-        for xml_string in xml_strings:
-            # Since we open the file in binary mode
-            # We encode the xml_string to its
-            # UTF-8 binary string.
-            # We also append 4 spaces for indentation.
-            xml_bytes_string = ("    " + xml_string).encode("UTF-8")
-            # print(bytes_string)
-            docIndex_handle.write(xml_bytes_string)
-            docIndex_handle.write("\n".encode("UTF-8"))
-        # After writing the xml strings to the file,
-        # we add the docIndex tag that was overwritten
-        # by the xml strings.
-        docIndex_handle.write(docindex_tag)
+            # Create each subelement in the <doc></doc> tag.
+            sub_element = ET.Element(key)
+            sub_element.text = str(doc_element[key])
+            # Append the subelement to the doc element.
+            doc_ET_element.append(sub_element)
+        
+            
+        # Last, append the doc element to the list of xml elements.
+        xml_doc_elements.append(doc_ET_element)
+    return xml_doc_elements
+        
+    
+def append_to_docIndex(docIndex: Path, xml_elements: List[ET.Element]) -> None:
+    tree = ET.parse(docIndex, parser=ET.XMLParser(encoding="UTF-8"))
+    root = tree.getroot()
+    for element in xml_elements:
+        root.append(element)
+        
+    tree.write(docIndex, encoding="UTF-8")
 
 
 def create_template_string(doc_elements: List[Dict], folder_name) -> str:
@@ -191,7 +167,7 @@ def update_parent_child_table(doc_elements, root):
 def create_new_table_index_element(
     table_index_path: Path, folder_name, row_count
 ):
-    tree = ET.parse(table_index_path)
+    tree = ET.parse(table_index_path, parser=ET.XMLParser(encoding="UTF-8"))
     root = tree.getroot()
     tables_element = root.find("{http://www.sa.dk/xmlns/diark/1.0}tables")
     table_root = ET.SubElement(tables_element, "table")
@@ -253,11 +229,12 @@ def create_new_table_index_element(
     row_count = ET.SubElement(table_root, "rows").text = f"{row_count}"
 
     tree = ET.ElementTree(root)
-    tree.write(table_index_path)
+    tree.write(table_index_path, encoding="UTF-8")
 
 
 def make_copy(path: Path):
-    copy_destination = path.with_name(path.name + "Copy")
+    path_name = path.name.split(".")[0]
+    copy_destination = path.parent / (path_name + "Copy" + ".xml")
     shutil.copy(path, copy_destination)
     return copy_destination
 
@@ -327,14 +304,20 @@ if __name__ == "__main__":
                 tiff_template_string = create_template_string(
                     doc_elements, folder.name
                 )
-                stringToTiffPrinter(
-                    tiff_template_string, (folder.parent / "1.tiff")
-                )
 
-                # Convert the doc_elements to xml strings
+                try:
+                    stringToTiffPrinter(
+                        tiff_template_string, (folder.parent / "1.tiff")
+                    )
+                except OSError as e:
+                    print(f"An OSError occured with message: {e}")
+                    print("Could not save the tiff template, or it may be corrupted.")
+                    
+
+                # Convert the doc_elements to xml ET.Elements
                 # and append them to docIndex.
-                doc_element_xml_strings = doc_elements_to_xml(doc_elements)
-                append_to_docIndex(doc_index_copy, doc_element_xml_strings)
+                doc_element_xml = doc_elements_to_xml(doc_elements)
+                append_to_docIndex(doc_index_copy, doc_element_xml)
 
                 update_parent_child_table(
                     doc_elements, parent_child_table_root
@@ -343,9 +326,11 @@ if __name__ == "__main__":
 
             parent_child_tree = ET.ElementTree(parent_child_table_root)
             #ET.indent(parent_child_tree, "    ", 0)
-            parent_child_tree.write(table_xml_file)
-
-            create_new_table_index_element(
-                table_index_path, table_folder_path.name, row_count
-            )
+            parent_child_tree.write(table_xml_file, encoding="UTF-8")
             print(f"Finished processing {docCollection.name}.")
+
+        # Create the new table index element
+        # for the parent child relation table.    
+        create_new_table_index_element(
+            table_index_path, table_folder_path.name, row_count
+        )

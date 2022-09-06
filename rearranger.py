@@ -68,7 +68,7 @@ def rearrange_files(
                 file_path = Path(os.path.join(path, filename))
                 destination: Path = new_doc_collection / str(count) / filename
                 destination.parent.mkdir()
-                shutil.copy(file_path, destination)
+                shutil.move(file_path, destination)
                 pid = extracted_folder.parent.name
                 doc_element = {
                     "pID": pid,
@@ -240,7 +240,7 @@ def make_copy(path: Path):
 
 if __name__ == "__main__":
 
-    if argv[1] == "help":
+    if argv[1] == "--help":
         print(
             """
         Use as `python rearranger.py docCollection_dir

@@ -62,6 +62,16 @@ def rearrange_files(
 
     """
     doc_elements = []
+
+    # First, check if the extracted folder is from an msg file
+    # If so, we need to move the html and eml files outside
+    # and place them next to the msg file in order to avoid to
+    # add a tiff template.
+    if ".msg" in str(extracted_folder).lower():
+        for file_path in extracted_folder.iterdir():
+            if file_path.suffix == ".html" or file_path.suffix == ".eml":
+                shutil.move(str(file_path), str(extracted_folder.parent))
+         
     for path, subdirs, filenames in os.walk(extracted_folder):
         for filename in filenames:
             if not is_archive(filename):
@@ -79,7 +89,15 @@ def rearrange_files(
                     "aFt": "tif",
                 }
                 doc_elements.append(doc_element)
-                count += 1
+
+                # All the files in the .msg.extracted folder should be placed in the same docID folder,
+                # so that we only end up with one resulting docID folder for the text content of the msg file.
+                # In this case, we do not increment the count variable, so that the destination folder will be the same.
+                # We expect that the .msg.extracted folder only contains 2 files, the htmlBody and the eml file.
+                # All the attachments of the msg will be placed in the attachments subfolder, so their path will be
+                # of the form .msg.extracted/attachments.
+                if path.lower().endswith(".msg.extracted") == False:
+                    count += 1
     return doc_elements, count
 
 
@@ -238,6 +256,13 @@ def make_copy(path: Path):
     shutil.copy(path, copy_destination)
     return copy_destination
 
+def contains_msg_file(path: Path):
+    contains_msg = False
+    for file in path.iterdir():
+        if ".msg" in str(file).lower():
+            contains_msg = True
+    return contains_msg
+
 if __name__ == "__main__":
 
     if argv[1] == "--help":
@@ -300,18 +325,22 @@ if __name__ == "__main__":
                         print(element["oFn"])
                 except NameError:
                     continue
-                # Add tiff template
-                tiff_template_string = create_template_string(
-                    doc_elements, folder.name
-                )
-
-                try:
-                    stringToTiffPrinter(
-                        tiff_template_string, (folder.parent / "1.tiff")
+                
+                # Add tiff template if parent folder did not contain an msg file
+                # Since we already add the template info in the html version of the msg email text.
+                
+                if contains_msg_file(folder.parent) == False:
+                    tiff_template_string = create_template_string(
+                        doc_elements, folder.name
                     )
-                except OSError as e:
-                    print(f"An OSError occured with message: {e}")
-                    print("Could not save the tiff template, or it may be corrupted.")
+
+                    try:
+                        stringToTiffPrinter(
+                            tiff_template_string, (folder.parent / "1.tiff")
+                        )
+                    except OSError as e:
+                        print(f"An OSError occured with message: {e}")
+                        print("Could not save the tiff template, or it may be corrupted.")
                     
 
                 # Convert the doc_elements to xml ET.Elements

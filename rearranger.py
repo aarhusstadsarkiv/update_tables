@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import pdb
 import shutil
 from typing import Any, Dict, List, Tuple
 from sys import argv
@@ -8,6 +9,7 @@ import xml.etree.ElementTree as ET
 
 
 archive_suffixes = [".zip", ".tar", ".gz", ".7z", ".cab", ".rar"]
+EXTRACTED_EMAIL_SUFFIX = ".mail_extraction"
 
 
 def is_archive(file_name: str) -> bool:
@@ -62,6 +64,7 @@ def rearrange_files(
 
     """
     doc_elements = []
+    count_after_email = False
 
     # First, check if the extracted folder is from an msg file
     # If so, we need to move the html and eml files outside
@@ -73,11 +76,12 @@ def rearrange_files(
                 shutil.move(str(file_path), str(extracted_folder.parent))
          
     for path, subdirs, filenames in os.walk(extracted_folder):
+        print("Entering: " + path)
         for filename in filenames:
             if not is_archive(filename):
                 file_path = Path(os.path.join(path, filename))
                 destination: Path = new_doc_collection / str(count) / filename
-                destination.parent.mkdir()
+                destination.parent.mkdir(exist_ok=True)
                 shutil.move(file_path, destination)
                 pid = extracted_folder.parent.name
                 doc_element = {
@@ -88,16 +92,25 @@ def rearrange_files(
                     "oFn": filename,
                     "aFt": "tif",
                 }
-                doc_elements.append(doc_element)
 
-                # All the files in the .msg.extracted folder should be placed in the same docID folder,
-                # so that we only end up with one resulting docID folder for the text content of the msg file.
-                # In this case, we do not increment the count variable, so that the destination folder will be the same.
-                # We expect that the .msg.extracted folder only contains 2 files, the htmlBody and the eml file.
-                # All the attachments of the msg will be placed in the attachments subfolder, so their path will be
-                # of the form .msg.extracted/attachments.
-                if path.lower().endswith(".msg.extracted") == False:
-                    count += 1
+            # All the files in the .msg.extracted folder should be placed in the same docID folder,
+            # so that we only end up with one resulting docID folder for the text content of the msg file.
+            # In this case, we do not increment the count variable, so that the destination folder will be the same.
+            # We expect that the .msg.extracted folder only contains 2 files, the htmlBody and the eml file.
+            # All the attachments of the msg will be placed in the attachments subfolder, so their path will be
+            # of the form .msg.extracted/attachments.
+            if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) == False:
+                count += 1
+            
+            if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) and count_after_email:
+                count += 1
+                count_after_email = False
+                
+            elif path.lower().endswith(EXTRACTED_EMAIL_SUFFIX):
+                count_after_email = True
+
+                
+            doc_elements.append(doc_element)
     return doc_elements, count
 
 

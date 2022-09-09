@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ET
 
 archive_suffixes = [".zip", ".tar", ".gz", ".7z", ".cab", ".rar"]
 EXTRACTED_EMAIL_SUFFIX = ".mail_extraction"
+EXTRACTED_ARCHIVE_SUFFIX = ".archive_extraction"
 
 
 def is_archive(file_name: str) -> bool:
@@ -76,7 +77,7 @@ def rearrange_files(
                 shutil.move(str(file_path), str(extracted_folder.parent))
          
     for path, subdirs, filenames in os.walk(extracted_folder):
-        print("Entering: " + path)
+        #print("Entering: " + path)
         for filename in filenames:
             if not is_archive(filename):
                 file_path = Path(os.path.join(path, filename))
@@ -100,6 +101,8 @@ def rearrange_files(
             # All the attachments of the msg will be placed in the attachments subfolder, so their path will be
             # of the form .msg.extracted/attachments.
             if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) == False:
+                print("Extracted email folder: " + path)
+                print("Count: {}. Increment count: {}".format(count, count_after_email))
                 count += 1
             
             if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) and count_after_email:
@@ -107,6 +110,8 @@ def rearrange_files(
                 count_after_email = False
                 
             elif path.lower().endswith(EXTRACTED_EMAIL_SUFFIX):
+                print("Extracted email folder: " + path)
+                print("Count: {}. Increment count: {}".format(count, count_after_email))
                 count_after_email = True
 
                 
@@ -314,12 +319,17 @@ if __name__ == "__main__":
             print(f"Could not parse the string: {argv[3]} as an integer.")
 
         for docCollection in root.iterdir():
+            # We only expect root to contain folders at the top level.
+            # If a file is found, it might be a log file,
+            # and we continue with the next folder.
+            if docCollection.is_dir() == False:
+                continue
             print(f"Start processing of {docCollection.name}")
             extracted_folders = []
             for doc_folder in docCollection.iterdir():
                 if doc_folder.is_dir():
                     for item in doc_folder.iterdir():
-                        if item.suffix == ".extracted":
+                        if item.suffix in [EXTRACTED_ARCHIVE_SUFFIX, EXTRACTED_EMAIL_SUFFIX]:
                             extracted_folders.append(item)
 
             for folder in extracted_folders:

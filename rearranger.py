@@ -41,7 +41,7 @@ def is_archive(file_name: str) -> bool:
 
 
 def rearrange_files(
-    extracted_folder: Path, new_doc_collection: Path, count: int
+    extracted_folder: Path, new_doc_collection: Path, count: int, outerMostLoop: bool
 ) -> Tuple[List[Dict], int]:
     """
     Description:
@@ -65,8 +65,56 @@ def rearrange_files(
 
     """
     doc_elements = []
-    count_after_email = False
+    if extracted_folder.suffix == EXTRACTED_EMAIL_SUFFIX:
+        for file_path in extracted_folder.iterdir():
+            if file_path.suffix in [".html", ".eml", ".rtf", ".txt"]:
+                if outerMostLoop:
+                    shutil.move(str(file_path), str(extracted_folder.parent))
+                else:
+                    destination: Path = new_doc_collection / str(count) / file_path.name
+                    destination.parent.mkdir(exist_ok=True)
+                    shutil.move(file_path, destination)
+                    pid = extracted_folder.parent.name
+                    doc_element = {
+                        "pID": pid,
+                        "dID": count,
+                        "mID": 1,
+                        "dCf": new_doc_collection.name,
+                        "oFn": extracted_folder.name,
+                        "aFt": "tif",
+                    }
+                    doc_elements.append(doc_element)
+                    
+        count+=1
+        if(extracted_folder / "attachments").exists():
+            rearrange_files((extracted_folder / "attachments"), new_doc_collection, count, False)
+    
+    elif str(extracted_folder).endswith("attachments") or extracted_folder.suffix == EXTRACTED_ARCHIVE_SUFFIX:
+        for file_path in extracted_folder.iterdir():
+            if file_path.is_file():
+                destination: Path = new_doc_collection / str(count) / file_path.name
+                destination.parent.mkdir(exist_ok=True)
+                shutil.move(file_path, destination)
+                pid = extracted_folder.parent.name
+                doc_element = {
+                    "pID": pid,
+                    "dID": count,
+                    "mID": 1,
+                    "dCf": new_doc_collection.name,
+                    "oFn": extracted_folder.name,
+                    "aFt": "tif",
+                }
+                doc_elements.append(doc_element)
+                count += 1
+            else:
+                rearrange_files(file_path, new_doc_collection, count, False)
+    return doc_elements, count
 
+
+                
+
+
+    """
     # First, check if the extracted folder is from an msg file
     # If so, we need to move the html and eml files outside
     # and place them next to the msg file in order to avoid to
@@ -78,6 +126,11 @@ def rearrange_files(
          
     for path, subdirs, filenames in os.walk(extracted_folder):
         #print("Entering: " + path)
+        if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) == False:
+            increment_doc_id = True
+        elif path.lower().endswith(EXTRACTED_EMAIL_SUFFIX):
+            increment_doc_id = False
+
         for filename in filenames:
             if not is_archive(filename):
                 file_path = Path(os.path.join(path, filename))
@@ -100,23 +153,18 @@ def rearrange_files(
             # We expect that the .msg.extracted folder only contains 2 files, the htmlBody and the eml file.
             # All the attachments of the msg will be placed in the attachments subfolder, so their path will be
             # of the form .msg.extracted/attachments.
-            if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) == False:
-                print("Extracted email folder: " + path)
-                print("Count: {}. Increment count: {}".format(count, count_after_email))
+            if increment_doc_id:
+                print("Path: {}. Increment: {}".format(path, increment_doc_id))
+                print("Count: {}".format(count))
                 count += 1
-            
-            if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) and count_after_email:
-                count += 1
-                count_after_email = False
                 
-            elif path.lower().endswith(EXTRACTED_EMAIL_SUFFIX):
-                print("Extracted email folder: " + path)
-                print("Count: {}. Increment count: {}".format(count, count_after_email))
-                count_after_email = True
+            else:
+                print("Path: {}. Increment: {}".format(path, increment_doc_id))
+                print("Count: {}".format(count))
+                increment_doc_id = True
 
-                
             doc_elements.append(doc_element)
-    return doc_elements, count
+    return doc_elements, count"""
 
 
 def doc_elements_to_xml(doc_elements: List[Dict[str, Any]]) -> List[ET.Element]:
@@ -335,7 +383,7 @@ if __name__ == "__main__":
             for folder in extracted_folders:
                 try:
                     doc_elements, count = rearrange_files(
-                    folder, new_docCollection, count
+                    folder, new_docCollection, count, True
                     )
                 except FileExistsError as e:
                     print("Skipping file since it already exists.")
@@ -383,6 +431,9 @@ if __name__ == "__main__":
 
         # Create the new table index element
         # for the parent child relation table.    
-        create_new_table_index_element(
-            table_index_path, table_folder_path.name, row_count
-        )
+        try:
+            create_new_table_index_element(
+                table_index_path, table_folder_path.name, row_count
+            )
+        except FileNotFoundError:
+            print("Could not find the tableIndex.xml file.")

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import pdb
 import shutil
 from typing import Any, Dict, List, Tuple
 from sys import argv
@@ -8,6 +9,8 @@ import xml.etree.ElementTree as ET
 
 
 archive_suffixes = [".zip", ".tar", ".gz", ".7z", ".cab", ".rar"]
+EXTRACTED_EMAIL_SUFFIX = ".mail_extraction"
+EXTRACTED_ARCHIVE_SUFFIX = ".archive_extraction"
 
 
 def is_archive(file_name: str) -> bool:
@@ -38,7 +41,7 @@ def is_archive(file_name: str) -> bool:
 
 
 def rearrange_files(
-    extracted_folder: Path, new_doc_collection: Path, count: int
+    extracted_folder: Path, new_doc_collection: Path, count: int, outerMostLoop: bool
 ) -> Tuple[List[Dict], int]:
     """
     Description:
@@ -62,12 +65,77 @@ def rearrange_files(
 
     """
     doc_elements = []
+    if extracted_folder.suffix == EXTRACTED_EMAIL_SUFFIX:
+        for file_path in extracted_folder.iterdir():
+            if file_path.suffix in [".html", ".eml", ".rtf", ".txt"]:
+                if outerMostLoop:
+                    shutil.move(str(file_path), str(extracted_folder.parent))
+                else:
+                    destination: Path = new_doc_collection / str(count) / file_path.name
+                    destination.parent.mkdir(exist_ok=True)
+                    shutil.move(file_path, destination)
+                    pid = extracted_folder.parent.name
+                    doc_element = {
+                        "pID": pid,
+                        "dID": count,
+                        "mID": 1,
+                        "dCf": new_doc_collection.name,
+                        "oFn": extracted_folder.name,
+                        "aFt": "tif",
+                    }
+                    doc_elements.append(doc_element)
+                    
+        count+=1
+        if(extracted_folder / "attachments").exists():
+            rearrange_files((extracted_folder / "attachments"), new_doc_collection, count, False)
+    
+    elif str(extracted_folder).endswith("attachments") or extracted_folder.suffix == EXTRACTED_ARCHIVE_SUFFIX:
+        for file_path in extracted_folder.iterdir():
+            if file_path.is_file():
+                destination: Path = new_doc_collection / str(count) / file_path.name
+                destination.parent.mkdir(exist_ok=True)
+                shutil.move(file_path, destination)
+                pid = extracted_folder.parent.name
+                doc_element = {
+                    "pID": pid,
+                    "dID": count,
+                    "mID": 1,
+                    "dCf": new_doc_collection.name,
+                    "oFn": extracted_folder.name,
+                    "aFt": "tif",
+                }
+                doc_elements.append(doc_element)
+                count += 1
+            else:
+                rearrange_files(file_path, new_doc_collection, count, False)
+    return doc_elements, count
+
+
+                
+
+
+    """
+    # First, check if the extracted folder is from an msg file
+    # If so, we need to move the html and eml files outside
+    # and place them next to the msg file in order to avoid to
+    # add a tiff template.
+    if ".msg" in str(extracted_folder).lower():
+        for file_path in extracted_folder.iterdir():
+            if file_path.suffix == ".html" or file_path.suffix == ".eml":
+                shutil.move(str(file_path), str(extracted_folder.parent))
+         
     for path, subdirs, filenames in os.walk(extracted_folder):
+        #print("Entering: " + path)
+        if path.lower().endswith(EXTRACTED_EMAIL_SUFFIX) == False:
+            increment_doc_id = True
+        elif path.lower().endswith(EXTRACTED_EMAIL_SUFFIX):
+            increment_doc_id = False
+
         for filename in filenames:
             if not is_archive(filename):
                 file_path = Path(os.path.join(path, filename))
                 destination: Path = new_doc_collection / str(count) / filename
-                destination.parent.mkdir()
+                destination.parent.mkdir(exist_ok=True)
                 shutil.move(file_path, destination)
                 pid = extracted_folder.parent.name
                 doc_element = {
@@ -78,9 +146,25 @@ def rearrange_files(
                     "oFn": filename,
                     "aFt": "tif",
                 }
-                doc_elements.append(doc_element)
+
+            # All the files in the .msg.extracted folder should be placed in the same docID folder,
+            # so that we only end up with one resulting docID folder for the text content of the msg file.
+            # In this case, we do not increment the count variable, so that the destination folder will be the same.
+            # We expect that the .msg.extracted folder only contains 2 files, the htmlBody and the eml file.
+            # All the attachments of the msg will be placed in the attachments subfolder, so their path will be
+            # of the form .msg.extracted/attachments.
+            if increment_doc_id:
+                print("Path: {}. Increment: {}".format(path, increment_doc_id))
+                print("Count: {}".format(count))
                 count += 1
-    return doc_elements, count
+                
+            else:
+                print("Path: {}. Increment: {}".format(path, increment_doc_id))
+                print("Count: {}".format(count))
+                increment_doc_id = True
+
+            doc_elements.append(doc_element)
+    return doc_elements, count"""
 
 
 def doc_elements_to_xml(doc_elements: List[Dict[str, Any]]) -> List[ET.Element]:
@@ -238,6 +322,13 @@ def make_copy(path: Path):
     shutil.copy(path, copy_destination)
     return copy_destination
 
+def contains_msg_file(path: Path):
+    contains_msg = False
+    for file in path.iterdir():
+        if ".msg" in str(file).lower():
+            contains_msg = True
+    return contains_msg
+
 if __name__ == "__main__":
 
     if argv[1] == "--help":
@@ -276,18 +367,23 @@ if __name__ == "__main__":
             print(f"Could not parse the string: {argv[3]} as an integer.")
 
         for docCollection in root.iterdir():
+            # We only expect root to contain folders at the top level.
+            # If a file is found, it might be a log file,
+            # and we continue with the next folder.
+            if docCollection.is_dir() == False:
+                continue
             print(f"Start processing of {docCollection.name}")
             extracted_folders = []
             for doc_folder in docCollection.iterdir():
                 if doc_folder.is_dir():
                     for item in doc_folder.iterdir():
-                        if item.suffix == ".extracted":
+                        if item.suffix in [EXTRACTED_ARCHIVE_SUFFIX, EXTRACTED_EMAIL_SUFFIX]:
                             extracted_folders.append(item)
 
             for folder in extracted_folders:
                 try:
                     doc_elements, count = rearrange_files(
-                    folder, new_docCollection, count
+                    folder, new_docCollection, count, True
                     )
                 except FileExistsError as e:
                     print("Skipping file since it already exists.")
@@ -300,18 +396,22 @@ if __name__ == "__main__":
                         print(element["oFn"])
                 except NameError:
                     continue
-                # Add tiff template
-                tiff_template_string = create_template_string(
-                    doc_elements, folder.name
-                )
-
-                try:
-                    stringToTiffPrinter(
-                        tiff_template_string, (folder.parent / "1.tiff")
+                
+                # Add tiff template if parent folder did not contain an msg file
+                # Since we already add the template info in the html version of the msg email text.
+                
+                if contains_msg_file(folder.parent) == False:
+                    tiff_template_string = create_template_string(
+                        doc_elements, folder.name
                     )
-                except OSError as e:
-                    print(f"An OSError occured with message: {e}")
-                    print("Could not save the tiff template, or it may be corrupted.")
+
+                    try:
+                        stringToTiffPrinter(
+                            tiff_template_string, (folder.parent / "1.tiff")
+                        )
+                    except OSError as e:
+                        print(f"An OSError occured with message: {e}")
+                        print("Could not save the tiff template, or it may be corrupted.")
                     
 
                 # Convert the doc_elements to xml ET.Elements
@@ -331,6 +431,9 @@ if __name__ == "__main__":
 
         # Create the new table index element
         # for the parent child relation table.    
-        create_new_table_index_element(
-            table_index_path, table_folder_path.name, row_count
-        )
+        try:
+            create_new_table_index_element(
+                table_index_path, table_folder_path.name, row_count
+            )
+        except FileNotFoundError:
+            print("Could not find the tableIndex.xml file.")
